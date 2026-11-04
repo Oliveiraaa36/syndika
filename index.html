@@ -1,0 +1,2077 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Syndika — Premium Building Intelligence</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#07090F;--bg2:#0B0E18;--bg3:#0F1320;
+  --surface:#131829;--surface2:#18203A;--surface3:#1D2640;
+  --border:#1B2540;--border2:#243060;
+  --ink:#FFFFFF;--ink2:rgba(255,255,255,0.75);--ink3:rgba(255,255,255,0.44);--ink4:rgba(255,255,255,0.20);
+  --indigo:#4F46E5;--indigo2:#6366F1;--indigo3:#818CF8;
+  --green:#059669;--green2:#34D399;--green3:#6EE7B7;
+  --green-bg:rgba(5,150,105,0.10);--green-border:rgba(52,211,153,0.22);
+  --gold:#D97706;--gold2:#FBBF24;
+  --red:#DC2626;--red-bg:rgba(220,38,38,0.10);--red-border:rgba(248,113,113,0.25);
+  --yellow-bg:rgba(217,119,6,0.12);--yellow-border:rgba(251,191,36,0.25);
+  --r:10px;--r-lg:14px;--r-xl:18px;--r-2xl:24px;
+  --shadow:0 4px 24px rgba(0,0,0,0.5);
+  --glow-indigo:0 0 60px rgba(79,70,229,0.22);
+}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased;overflow-x:hidden}
+
+/* ── SCREENS ── */
+.screen{display:none !important;min-height:100vh}
+.screen.active{display:block !important}
+#splash.screen.active{display:flex !important}
+
+/* ══════════════════════════════
+   SPLASH
+══════════════════════════════ */
+#splash{
+  background:var(--bg);
+  display:flex;flex-direction:column;align-items:center;justify-content:center;
+  position:relative;overflow:hidden;min-height:100vh;padding:40px 24px;
+}
+.splash-noise{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:url("data:image/svg+xml,%3Csvg viewBox='0 0 512 512' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='n'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.75' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23n)' opacity='0.03'/%3E%3C/svg%3E");
+  opacity:.6;
+}
+.splash-glow-1{position:absolute;width:700px;height:700px;border-radius:50%;background:radial-gradient(circle,rgba(79,70,229,0.13) 0%,transparent 65%);top:50%;left:50%;transform:translate(-50%,-55%);pointer-events:none}
+.splash-glow-2{position:absolute;width:400px;height:400px;border-radius:50%;background:radial-gradient(circle,rgba(5,150,105,0.07) 0%,transparent 65%);bottom:-100px;right:-80px;pointer-events:none}
+.splash-lines{
+  position:absolute;inset:0;pointer-events:none;
+  background-image:
+    linear-gradient(rgba(255,255,255,0.018) 1px,transparent 1px),
+    linear-gradient(90deg,rgba(255,255,255,0.018) 1px,transparent 1px);
+  background-size:56px 56px;
+  mask-image:radial-gradient(ellipse 70% 70% at 50% 50%, black 0%, transparent 100%);
+}
+
+.splash-inner{position:relative;z-index:2;text-align:center;max-width:520px;width:100%}
+
+/* ── LOGO MARK ── */
+.logo-mark-wrap{display:inline-flex;align-items:center;justify-content:center;margin-bottom:28px;position:relative}
+.logo-mark-glow{
+  position:absolute;inset:-20px;border-radius:50%;
+  background:radial-gradient(circle,rgba(79,70,229,0.25) 0%,transparent 65%);
+  pointer-events:none;
+}
+.logo-mark-svg{
+  width:80px;height:80px;
+  filter:drop-shadow(0 0 24px rgba(79,70,229,0.4));
+}
+
+/* ── WORDMARK ── */
+.splash-wordmark{
+  font-size:44px;font-weight:900;letter-spacing:-2px;margin-bottom:8px;line-height:1;
+}
+.splash-wordmark .wm-s{
+  background:linear-gradient(135deg,#818CF8 0%,#4F46E5 50%,#312E81 100%);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.splash-tagline{
+  font-size:13px;font-weight:600;color:var(--ink3);letter-spacing:2.5px;text-transform:uppercase;margin-bottom:36px;
+}
+
+/* ── BADGE ATIVO ── */
+.splash-active-badge{
+  display:inline-flex;align-items:center;gap:8px;
+  background:var(--green-bg);border:1px solid var(--green-border);
+  color:var(--green2);font-size:12px;font-weight:700;
+  padding:8px 18px;border-radius:24px;margin-bottom:28px;
+}
+.badge-dot{width:6px;height:6px;background:var(--green2);border-radius:50%;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.4;transform:scale(1.5)}}
+
+/* ── MÓDULO HERO ── */
+.splash-module-hero{
+  background:linear-gradient(135deg,rgba(79,70,229,0.10),rgba(99,102,241,0.06));
+  border:1px solid rgba(79,70,229,0.20);
+  border-radius:var(--r-2xl);
+  padding:24px;margin-bottom:28px;text-align:left;position:relative;overflow:hidden;
+}
+.splash-module-hero::before{
+  content:'';position:absolute;top:-40px;right:-40px;width:180px;height:180px;
+  border-radius:50%;background:radial-gradient(circle,rgba(79,70,229,0.15),transparent 65%);
+  pointer-events:none;
+}
+.smh-inner{position:relative;z-index:1;display:flex;align-items:flex-start;gap:16px}
+.smh-icon{
+  width:52px;height:52px;border-radius:14px;
+  background:linear-gradient(135deg,rgba(79,70,229,0.25),rgba(99,102,241,0.15));
+  border:1px solid rgba(99,102,241,0.25);
+  display:flex;align-items:center;justify-content:center;flex-shrink:0;
+}
+.smh-label{font-size:10px;font-weight:700;letter-spacing:2px;color:var(--indigo3);text-transform:uppercase;margin-bottom:5px}
+.smh-title{font-size:17px;font-weight:900;letter-spacing:-.4px;margin-bottom:4px}
+.smh-desc{font-size:12px;color:var(--ink3);line-height:1.55}
+
+/* ── MÓDULOS LOCK ── */
+.splash-modules-preview{
+  display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:32px;
+}
+.smp-card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--r-lg);padding:12px 14px;text-align:left;
+  display:flex;align-items:center;gap:10px;
+}
+.smp-card.locked{opacity:.45}
+.smp-icon{font-size:18px;flex-shrink:0}
+.smp-info{}
+.smp-name{font-size:12px;font-weight:700;color:var(--ink2);margin-bottom:2px}
+.smp-status{font-size:10px;font-weight:600}
+.smp-active{color:var(--green2)}
+.smp-soon{color:var(--ink4)}
+.smp-lock{font-size:9px;background:var(--surface2);color:var(--ink4);padding:2px 7px;border-radius:6px;border:1px solid var(--border);font-weight:700;letter-spacing:.5px;margin-left:auto}
+
+/* ── CTA ── */
+.btn-cta{
+  display:inline-flex;align-items:center;justify-content:center;gap:10px;
+  width:100%;
+  background:linear-gradient(135deg,#312E81,#4338CA,#4F46E5);
+  color:#fff;border:none;border-radius:var(--r-xl);
+  padding:17px 32px;font-size:16px;font-weight:800;cursor:pointer;font-family:inherit;
+  letter-spacing:-.2px;
+  box-shadow:0 4px 32px rgba(79,70,229,0.4),0 0 0 1px rgba(99,102,241,0.25);
+  transition:all .2s;
+}
+.btn-cta:hover{transform:translateY(-2px);box-shadow:0 8px 40px rgba(79,70,229,0.5),0 0 0 1px rgba(99,102,241,0.4)}
+.btn-cta-arrow{font-size:18px;transition:transform .2s}
+.btn-cta:hover .btn-cta-arrow{transform:translateX(3px)}
+
+.splash-footnote{margin-top:20px;font-size:11px;color:var(--ink4);font-weight:500}
+
+/* ══════════════════════════════
+   APP SHELL
+══════════════════════════════ */
+.app-shell{display:flex;min-height:100vh}
+
+/* ── SIDEBAR ── */
+.sidebar{
+  width:248px;background:var(--bg2);border-right:1px solid var(--border);
+  display:flex;flex-direction:column;position:fixed;top:0;left:0;height:100vh;z-index:50;
+}
+.sb-head{padding:22px 18px 18px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:12px}
+.sb-head-logo{flex-shrink:0}
+.sb-head-logo svg{width:34px;height:34px;filter:drop-shadow(0 0 8px rgba(79,70,229,0.3))}
+.sb-head-text{font-size:18px;font-weight:900;letter-spacing:-.5px}
+.sb-head-text .wm-s{
+  background:linear-gradient(135deg,#818CF8,#4F46E5);
+  -webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;
+}
+.sb-condo{padding:12px 18px;border-bottom:1px solid var(--border)}
+.sb-condo-name{font-size:12px;font-weight:700;color:var(--ink2)}
+.sb-condo-role{font-size:10px;color:var(--green2);font-weight:600;display:flex;align-items:center;gap:4px;margin-top:3px}
+.sb-condo-dot{width:5px;height:5px;background:var(--green2);border-radius:50%;display:inline-block;animation:pulse 2s infinite}
+.sb-nav{flex:1;padding:14px 10px;display:flex;flex-direction:column;gap:2px;overflow-y:auto}
+.nav-section{font-size:9px;font-weight:800;color:var(--ink4);letter-spacing:2px;text-transform:uppercase;padding:10px 10px 5px}
+.nav-item{
+  display:flex;align-items:center;gap:9px;padding:9px 10px;border-radius:10px;
+  cursor:pointer;transition:all .14s;border:none;background:none;font-family:inherit;
+  width:100%;text-align:left;color:var(--ink3);font-size:12.5px;font-weight:500;
+}
+.nav-item:hover{background:var(--surface);color:var(--ink2)}
+.nav-item.active{background:var(--surface2);color:var(--ink);font-weight:700}
+.nav-icon{font-size:15px;width:18px;text-align:center;opacity:.6;flex-shrink:0}
+.nav-item.active .nav-icon{opacity:1}
+.nav-badge{margin-left:auto;background:var(--green);color:#fff;font-size:9px;font-weight:800;padding:2px 6px;border-radius:8px}
+.nav-lock{margin-left:auto;font-size:9px;color:var(--ink4);background:var(--surface2);border:1px solid var(--border);padding:2px 6px;border-radius:6px;font-weight:700}
+.nav-item.locked{opacity:.4;cursor:not-allowed}
+.sb-footer{padding:14px 10px;border-top:1px solid var(--border)}
+.sb-user{display:flex;align-items:center;gap:10px;padding:9px 10px;border-radius:10px;cursor:pointer;transition:all .14s}
+.sb-user:hover{background:var(--surface)}
+.sb-avatar{width:30px;height:30px;background:linear-gradient(135deg,#4F46E5,#6366F1);border-radius:8px;display:flex;align-items:center;justify-content:center;font-size:12px;flex-shrink:0}
+.sb-user-info{flex:1;min-width:0}
+.sb-user-name{font-size:11.5px;font-weight:700;color:var(--ink2);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.sb-user-plan{font-size:10px;color:var(--indigo3);font-weight:600}
+
+/* ── MAIN ── */
+.main-content{margin-left:248px;flex:1;min-height:100vh;background:var(--bg)}
+.topbar{padding:18px 26px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:rgba(7,9,15,0.8);position:sticky;top:0;z-index:40;backdrop-filter:blur(16px)}
+.topbar-title{font-size:19px;font-weight:900;letter-spacing:-.4px}
+.topbar-right{display:flex;align-items:center;gap:8px}
+.tb-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;background:var(--surface);border:1px solid var(--border);border-radius:10px;color:var(--ink2);font-size:12.5px;font-weight:600;cursor:pointer;font-family:inherit;transition:all .14s}
+.tb-btn:hover{background:var(--surface2);border-color:var(--border2)}
+.tb-btn-primary{background:linear-gradient(135deg,#312E81,#4338CA,#4F46E5);border-color:rgba(99,102,241,0.35);color:#fff}
+.tb-btn-primary:hover{box-shadow:0 4px 20px rgba(79,70,229,0.35)}
+
+/* ── PAGE ── */
+.page{padding:26px;display:none}.page.active{display:block}
+.page-grid{display:grid;grid-template-columns:1fr 1fr;gap:16px}
+
+/* ── CARDS ── */
+.card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:20px;transition:border-color .18s}
+.card:hover{border-color:var(--border2)}
+.card-title{font-size:12.5px;font-weight:700;color:var(--ink2);margin-bottom:14px;display:flex;align-items:center;gap:8px}
+
+/* ── KPIs ── */
+.kpi-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:14px;margin-bottom:20px}
+.kpi-card{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:18px 20px;position:relative;overflow:hidden;transition:all .18s}
+.kpi-card:hover{border-color:var(--border2);transform:translateY(-1px)}
+.kpi-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2px;border-radius:2px 2px 0 0}
+.kpi-indigo::before{background:linear-gradient(90deg,#312E81,#818CF8)}
+.kpi-green::before{background:linear-gradient(90deg,#065F46,#6EE7B7)}
+.kpi-gold::before{background:linear-gradient(90deg,#92400E,#FCD34D)}
+.kpi-label{font-size:10px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:1px;margin-bottom:8px}
+.kpi-value{font-size:28px;font-weight:900;color:var(--ink);letter-spacing:-1.5px;line-height:1}
+.kpi-sub{font-size:11.5px;color:var(--ink3);margin-top:6px}
+.kpi-icon{position:absolute;top:16px;right:16px;font-size:18px;opacity:.4}
+
+/* ══════════════════════════════
+   ESCUDO JURÍDICO
+══════════════════════════════ */
+/* Hero do escudo */
+.escudo-hero{
+  background:linear-gradient(145deg,#07090F 0%,#0F0D28 50%,#120F35 100%);
+  border:1px solid rgba(79,70,229,0.20);
+  border-radius:var(--r-2xl);padding:30px;margin-bottom:20px;
+  position:relative;overflow:hidden;
+}
+.escudo-hero::before{
+  content:'';position:absolute;top:-60px;right:-50px;width:280px;height:280px;
+  border-radius:50%;background:radial-gradient(circle,rgba(79,70,229,0.14),transparent 60%);
+}
+.escudo-hero::after{
+  content:'';position:absolute;bottom:-40px;left:10px;width:200px;height:200px;
+  border-radius:50%;background:radial-gradient(circle,rgba(5,150,105,0.07),transparent 60%);
+}
+.escudo-hero-inner{position:relative;z-index:1;display:flex;align-items:center;gap:20px}
+.escudo-shield-icon{
+  width:68px;height:68px;border-radius:18px;flex-shrink:0;
+  background:linear-gradient(135deg,rgba(79,70,229,0.22),rgba(99,102,241,0.12));
+  border:1px solid rgba(99,102,241,0.24);
+  display:flex;align-items:center;justify-content:center;
+  box-shadow:0 0 32px rgba(79,70,229,0.2);
+}
+.escudo-label{font-size:10px;font-weight:700;letter-spacing:2.5px;color:var(--indigo3);text-transform:uppercase;margin-bottom:5px}
+.escudo-title{font-size:22px;font-weight:900;letter-spacing:-.5px;margin-bottom:5px}
+.escudo-sub{font-size:13px;color:var(--ink3);line-height:1.55;max-width:420px}
+.escudo-stats{display:flex;align-items:center;gap:20px;margin-top:18px;padding-top:18px;border-top:1px solid rgba(255,255,255,0.06)}
+.esc-stat{text-align:center}
+.esc-stat-n{font-size:20px;font-weight:900;display:block;letter-spacing:-.5px}
+.esc-stat-l{font-size:10px;color:var(--ink3);margin-top:2px;font-weight:500}
+.esc-div{width:1px;height:32px;background:rgba(255,255,255,0.07)}
+
+/* Fluxo */
+.escudo-flow{display:flex;align-items:center;gap:8px;margin-top:16px;flex-wrap:wrap}
+.flow-step{
+  display:flex;align-items:center;gap:7px;
+  background:var(--surface2);border:1px solid var(--border);
+  border-radius:20px;padding:7px 13px;font-size:11px;font-weight:700;color:var(--ink3);
+}
+.flow-step.done{border-color:var(--green-border);background:var(--green-bg);color:var(--green2)}
+.flow-step.curr{border-color:rgba(79,70,229,0.35);background:rgba(79,70,229,0.08);color:var(--indigo3)}
+.flow-arrow{color:var(--ink4);font-size:11px}
+
+/* Formulário de ação */
+.action-form{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);padding:22px;margin-bottom:16px}
+.action-form-title{font-size:13px;font-weight:800;margin-bottom:16px;display:flex;align-items:center;gap:8px}
+.form-label{font-size:11px;font-weight:700;color:var(--ink3);text-transform:uppercase;letter-spacing:.7px;margin-bottom:7px;display:block}
+.form-input{
+  width:100%;padding:11px 13px;background:var(--bg3);border:1px solid var(--border);
+  border-radius:9px;font-size:13.5px;font-family:inherit;color:var(--ink);outline:none;transition:all .16s;
+}
+.form-input:focus{border-color:var(--indigo2);box-shadow:0 0 0 3px rgba(99,102,241,0.10)}
+.form-textarea{resize:vertical;min-height:80px}
+.form-select{cursor:pointer;appearance:none;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='rgba(255,255,255,0.3)' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+.form-group{margin-bottom:14px}
+.form-row{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.date-field-wrap{position:relative;cursor:pointer}
+.date-field-wrap .form-input{cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='15' height='15' viewBox='0 0 24 24' fill='none' stroke='rgba(255,255,255,0.35)' stroke-width='1.8' stroke-linecap='round'%3E%3Crect x='3' y='4' width='18' height='18' rx='2'/%3E%3Cline x1='16' y1='2' x2='16' y2='6'/%3E%3Cline x1='8' y1='2' x2='8' y2='6'/%3E%3Cline x1='3' y1='10' x2='21' y2='10'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 12px center}
+
+/* ── CALENDÁRIO CUSTOMIZADO ── */
+#custom-calendar{
+  position:fixed;z-index:99999;
+  background:var(--surface);border:1px solid var(--border2);
+  border-radius:var(--r-lg);padding:16px;width:268px;
+  box-shadow:0 8px 40px rgba(0,0,0,0.7);display:none;
+}
+.cal-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:14px}
+.cal-title{font-size:14px;font-weight:700;color:var(--ink)}
+.cal-nav{background:transparent;border:1px solid var(--border2);color:var(--ink2);
+  width:30px;height:30px;border-radius:7px;cursor:pointer;font-size:17px;
+  display:flex;align-items:center;justify-content:center;transition:all .12s}
+.cal-nav:hover{background:var(--surface2);border-color:var(--indigo2);color:var(--ink)}
+.cal-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:2px}
+.cal-day-name{font-size:10px;font-weight:700;color:var(--ink4);text-align:center;padding:4px 0;letter-spacing:.3px}
+.cal-day{font-size:12.5px;font-weight:500;color:var(--ink2);text-align:center;
+  padding:7px 2px;border-radius:7px;cursor:pointer;transition:all .1s;line-height:1}
+.cal-day:hover{background:var(--surface2);color:var(--ink)}
+.cal-today{background:rgba(79,70,229,0.18);color:var(--indigo3);font-weight:700}
+.cal-today:hover{background:rgba(79,70,229,0.28)}
+.cal-selected{background:var(--indigo)!important;color:#fff!important;font-weight:700}
+.cal-other-month{color:var(--ink4)}
+.cal-sep{height:1px;background:var(--border);margin:12px 0}
+.cal-today-btn{width:100%;background:transparent;border:1px solid var(--border2);
+  color:var(--ink3);font-size:12px;font-weight:600;padding:7px;border-radius:7px;
+  cursor:pointer;font-family:inherit;transition:all .12s}
+.cal-today-btn:hover{border-color:var(--indigo2);color:var(--ink)}
+
+/* ── BADGE FORMALIZAÇÃO ── */
+.formal-badge{
+  display:none;font-size:11px;font-weight:600;color:var(--indigo3);
+  background:rgba(79,70,229,0.07);border:1px solid rgba(79,70,229,0.18);
+  border-radius:8px;padding:8px 12px;margin-top:6px;line-height:1.5;
+  border-left:3px solid var(--indigo);
+}
+.formal-badge.visible{display:block}
+.formal-badge-label{font-size:9.5px;font-weight:800;color:var(--ink4);letter-spacing:1px;text-transform:uppercase;margin-bottom:4px}
+
+/* Tipos de ação */
+.action-types{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin-bottom:4px}
+.at-btn{
+  padding:11px 8px;background:var(--bg3);border:1.5px solid var(--border);
+  border-radius:10px;cursor:pointer;text-align:center;transition:all .16s;font-family:inherit;
+}
+.at-btn:hover{border-color:var(--border2)}
+.at-btn.selected{border-color:rgba(79,70,229,0.45);background:rgba(79,70,229,0.08)}
+.at-emoji{font-size:20px;display:block;margin-bottom:4px}
+.at-label{font-size:10.5px;font-weight:600;color:var(--ink2)}
+
+/* Resultado de risco */
+.risk-analyzing{text-align:center;padding:28px;display:none}
+.risk-analyzing.show{display:block}
+.analyzing-ring{
+  width:52px;height:52px;border:3px solid var(--border);border-top-color:var(--indigo2);
+  border-radius:50%;animation:spin .7s linear infinite;margin:0 auto 14px;
+}
+@keyframes spin{to{transform:rotate(360deg)}}
+.risk-result-section{display:none}.risk-result-section.show{display:block}
+
+.risk-result{border-radius:var(--r-xl);padding:20px;margin-bottom:14px;border:1px solid}
+.risk-alto{background:rgba(217,119,6,0.07);border-color:var(--yellow-border)}
+.risk-baixo{background:var(--green-bg);border-color:var(--green-border)}
+.risk-result-header{display:flex;align-items:center;gap:12px;margin-bottom:12px}
+.risk-badge{padding:5px 12px;border-radius:20px;font-size:11px;font-weight:800;text-transform:uppercase;letter-spacing:.5px}
+.rb-alto{background:var(--yellow-bg);color:var(--gold2);border:1px solid var(--yellow-border)}
+.rb-baixo{background:var(--green-bg);color:var(--green2);border:1px solid var(--green-border)}
+.risk-result-title{font-size:15px;font-weight:800;letter-spacing:-.2px}
+.risk-result-sub{font-size:12.5px;color:var(--ink3);line-height:1.55;margin-bottom:14px}
+
+/* Checklist */
+.checklist{display:flex;flex-direction:column;gap:7px}
+.check-item{
+  display:flex;align-items:flex-start;gap:11px;padding:11px 13px;
+  background:var(--bg3);border:1px solid var(--border);border-radius:9px;cursor:pointer;transition:all .16s;
+}
+.check-item:hover{border-color:var(--border2)}
+.check-item.done{background:var(--green-bg);border-color:var(--green-border)}
+.check-box{
+  width:19px;height:19px;border-radius:6px;border:2px solid var(--border2);flex-shrink:0;
+  margin-top:1px;display:flex;align-items:center;justify-content:center;transition:all .16s;font-size:10px;font-weight:800;
+}
+.check-item.done .check-box{background:var(--green);border-color:var(--green);color:#fff}
+.check-item-title{font-size:12.5px;font-weight:700;color:var(--ink2)}
+.check-item.done .check-item-title{color:var(--green2)}
+.check-item-legal{font-size:10.5px;color:var(--ink4);margin-top:2px}
+.check-req{font-size:9px;font-weight:700;color:var(--red);background:var(--red-bg);padding:2px 6px;border-radius:6px;margin-left:6px}
+
+/* Doc gerado */
+.doc-gen{
+  background:var(--surface);border:1px solid var(--green-border);
+  border-radius:var(--r-xl);padding:18px;margin-bottom:10px;position:relative;overflow:hidden;
+}
+.doc-gen::before{content:'';position:absolute;top:0;left:0;width:3px;height:100%;background:linear-gradient(180deg,var(--green),var(--green2))}
+.doc-gen-type{font-size:9.5px;font-weight:700;letter-spacing:1.5px;color:var(--green2);text-transform:uppercase;margin-bottom:3px}
+.doc-gen-title{font-size:14px;font-weight:800;margin-bottom:3px}
+.doc-gen-meta{font-size:11px;color:var(--ink3)}
+.doc-btns{display:flex;gap:8px;margin-top:11px}
+.doc-btn{padding:6px 13px;border-radius:8px;font-size:11.5px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .14s;border:none}
+.doc-btn-p{background:var(--green);color:#fff}
+.doc-btn-p:hover{background:var(--green2);color:#065F46}
+.doc-btn-s{background:var(--surface2);color:var(--ink2);border:1px solid var(--border)}
+
+/* Histórico */
+.history-item{display:flex;align-items:center;gap:11px;padding:13px 0;border-bottom:1px solid var(--border)}
+.history-item:last-child{border-bottom:none}
+.history-icon{width:36px;height:36px;border-radius:9px;display:flex;align-items:center;justify-content:center;font-size:16px;flex-shrink:0}
+.history-title{font-size:12.5px;font-weight:700;color:var(--ink2)}
+.history-meta{font-size:11px;color:var(--ink3);margin-top:2px}
+.history-tag{font-size:10.5px;font-weight:700;padding:3px 8px;border-radius:9px}
+.ht-ok{background:var(--green-bg);color:var(--green2);border:1px solid var(--green-border)}
+.ht-pend{background:var(--yellow-bg);color:var(--gold2);border:1px solid var(--yellow-border)}
+
+/* Botões globais */
+.btn-full{width:100%;padding:13px;border:none;border-radius:11px;font-size:14px;font-weight:800;cursor:pointer;font-family:inherit;transition:all .18s}
+.btn-indigo{background:linear-gradient(135deg,#312E81,#4338CA,#4F46E5);color:#fff;box-shadow:0 4px 18px rgba(79,70,229,0.3)}
+.btn-indigo:hover{transform:translateY(-1px);box-shadow:0 8px 28px rgba(79,70,229,0.4)}
+.btn-green{background:linear-gradient(135deg,#065F46,#059669);color:#fff;box-shadow:0 4px 16px rgba(5,150,105,0.2)}
+.btn-ghost{background:var(--surface2);color:var(--ink2);border:1px solid var(--border)}
+.btn-ghost:hover{background:var(--surface3)}
+
+/* ── MODAIS ── */
+.modal-overlay{position:fixed;inset:0;background:rgba(0,0,0,.75);z-index:100;align-items:center;justify-content:center;padding:20px;display:none}
+.modal-overlay.open{display:flex}
+.modal{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-2xl);padding:26px;width:100%;max-width:500px;position:relative;max-height:90vh;overflow-y:auto}
+.modal-close{position:absolute;top:14px;right:14px;width:30px;height:30px;background:var(--surface2);border:1px solid var(--border);border-radius:7px;display:flex;align-items:center;justify-content:center;cursor:pointer;font-size:13px;color:var(--ink3);transition:all .14s}
+.modal-close:hover{background:var(--surface3);color:var(--ink)}
+.modal-title{font-size:18px;font-weight:900;letter-spacing:-.4px;margin-bottom:6px}
+.modal-sub{font-size:12.5px;color:var(--ink3);margin-bottom:20px;line-height:1.55}
+
+/* Tags e misc */
+.tag{display:inline-flex;align-items:center;gap:4px;padding:3px 9px;border-radius:8px;font-size:11px;font-weight:700}
+.tag-green{background:var(--green-bg);color:var(--green2);border:1px solid var(--green-border)}
+.tag-yellow{background:var(--yellow-bg);color:var(--gold2);border:1px solid var(--yellow-border)}
+.tag-red{background:var(--red-bg);color:#FCA5A5;border:1px solid var(--red-border)}
+.tag-indigo{background:rgba(79,70,229,0.10);color:var(--indigo3);border:1px solid rgba(79,70,229,0.22)}
+.divider{height:1px;background:var(--border);margin:16px 0}
+.section-title{font-size:13px;font-weight:800;letter-spacing:-.2px;margin-bottom:13px;display:flex;align-items:center;justify-content:space-between}
+
+/* ── DOC VIEWER (slide-over) ── */
+.viewer-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:200;display:none;align-items:stretch;justify-content:flex-end}
+.viewer-overlay.open{display:flex}
+.viewer-sheet{width:min(680px,100vw);background:#0f1320;border-left:1px solid var(--border);display:flex;flex-direction:column;height:100vh;animation:slideIn .22s ease-out}
+@keyframes slideIn{from{transform:translateX(100%)}to{transform:translateX(0)}}
+.viewer-head{padding:18px 22px;border-bottom:1px solid var(--border);display:flex;align-items:center;justify-content:space-between;background:var(--bg2);flex-shrink:0}
+.viewer-head-info{}
+.viewer-doc-type{font-size:10px;font-weight:700;letter-spacing:1.5px;color:var(--indigo3);text-transform:uppercase;margin-bottom:3px}
+.viewer-doc-title{font-size:16px;font-weight:900;letter-spacing:-.3px}
+.viewer-head-btns{display:flex;gap:8px;flex-shrink:0}
+.viewer-btn{display:flex;align-items:center;gap:6px;padding:8px 14px;border-radius:9px;font-size:12px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .14s;border:none}
+.viewer-btn-pdf{background:linear-gradient(135deg,#312E81,#4F46E5);color:#fff}
+.viewer-btn-pdf:hover{box-shadow:0 4px 16px rgba(79,70,229,.4)}
+.viewer-btn-close{background:var(--surface2);color:var(--ink2);border:1px solid var(--border)}
+.viewer-body{flex:1;overflow-y:auto;padding:28px;background:#f8f9fc}
+.viewer-paper{background:#fff;max-width:580px;margin:0 auto;border-radius:4px;box-shadow:0 4px 32px rgba(0,0,0,.18),0 1px 4px rgba(0,0,0,.1);overflow:hidden}
+.vp-head{background:#07090f;padding:18px 24px;display:flex;align-items:center;gap:12px}
+.vp-logo{font-size:11px;font-weight:900;color:#818CF8;letter-spacing:.5px}
+.vp-sep{width:1px;height:14px;background:rgba(255,255,255,.15);margin:0 4px}
+.vp-meta{font-size:10px;color:rgba(255,255,255,.45)}
+.vp-stripe{height:3px;background:linear-gradient(90deg,#4F46E5,#818CF8,#34D399)}
+.vp-body{padding:28px 32px;color:#1a1a2e}
+.vp-title{font-size:18px;font-weight:800;color:#1a1a2e;margin-bottom:4px;letter-spacing:-.3px}
+.vp-subtitle{font-size:11px;font-weight:600;color:#4F46E5;letter-spacing:1.5px;text-transform:uppercase;margin-bottom:20px}
+.vp-info-row{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-bottom:20px}
+.vp-info-box{background:#f5f6fc;border:1px solid #e4e6f0;border-radius:6px;padding:10px 12px}
+.vp-info-label{font-size:9px;font-weight:700;color:#6366F1;text-transform:uppercase;letter-spacing:1px;margin-bottom:2px}
+.vp-info-val{font-size:12px;font-weight:600;color:#1a1a2e}
+.vp-section{margin-bottom:18px}
+.vp-section-title{font-size:11px;font-weight:800;color:#312E81;text-transform:uppercase;letter-spacing:1px;border-bottom:2px solid #4F46E5;padding-bottom:4px;margin-bottom:10px}
+.vp-text{font-size:13px;color:#374151;line-height:1.65;margin-bottom:8px}
+.vp-highlight{background:#f0f1ff;border-left:3px solid #4F46E5;padding:10px 14px;border-radius:0 6px 6px 0;font-size:13px;color:#1a1a2e;font-weight:600;margin:10px 0}
+.vp-checklist{display:flex;flex-direction:column;gap:6px}
+.vp-check{display:flex;align-items:flex-start;gap:8px;font-size:12px;color:#374151;padding:6px 0;border-bottom:1px solid #f0f1f5}
+.vp-check:last-child{border-bottom:none}
+.vp-check-box{width:16px;height:16px;border:2px solid #4F46E5;border-radius:4px;flex-shrink:0;margin-top:1px;display:flex;align-items:center;justify-content:center;font-size:9px;color:#4F46E5;font-weight:800}
+.vp-check-legal{font-size:10px;color:#9ca3af;margin-top:1px}
+.vp-sign-area{display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-top:20px;padding-top:16px;border-top:1px solid #e5e7eb}
+.vp-sign-line{border-top:1px solid #374151;padding-top:6px}
+.vp-sign-label{font-size:10px;color:#6b7280}
+.vp-footer{background:#f5f6fc;border-top:1px solid #e4e6f0;padding:12px 24px;display:flex;align-items:center;justify-content:space-between}
+.vp-footer-text{font-size:9.5px;color:#9ca3af}
+.vp-legal-badge{font-size:9px;font-weight:700;background:#ede9fe;color:#4338CA;padding:3px 8px;border-radius:20px}
+/* fonte steps */
+.fonte-step{display:flex;align-items:center;gap:8px;font-size:11.5px;color:var(--ink3);opacity:0;transition:opacity .3s}
+.fonte-step.show{opacity:1}
+.fonte-dot{width:6px;height:6px;border-radius:50%;background:var(--indigo3);flex-shrink:0}
+.fonte-step.ok .fonte-dot{background:var(--green2)}
+.fonte-step.ok{color:var(--green2)}
+/* confiabilidade badge */
+.conf-badge{display:inline-flex;align-items:center;gap:6px;background:rgba(5,150,105,.08);border:1px solid var(--green-border);border-radius:20px;padding:5px 12px;font-size:11px;font-weight:700;color:var(--green2);margin-left:10px}
+
+/* ── IA CHAT ── */
+.ia-chat-wrap{background:var(--surface);border:1px solid var(--border);border-radius:var(--r-xl);overflow:hidden;margin-bottom:14px}
+.ia-chat-header{padding:12px 16px;border-bottom:1px solid var(--border);display:flex;align-items:center;gap:8px}
+.ia-chat-header-dot{width:7px;height:7px;background:var(--green2);border-radius:50%;animation:pulse 2s ease-in-out infinite}
+.ia-chat-header-label{font-size:12px;font-weight:700;color:var(--ink2)}
+.ia-chat-header-sub{font-size:11px;color:var(--ink3);margin-left:auto}
+.ia-chat-messages{padding:16px;display:flex;flex-direction:column;gap:12px;max-height:400px;overflow-y:auto;scroll-behavior:smooth}
+.ia-msg{display:flex;gap:9px;align-items:flex-start}
+.ia-msg.user{flex-direction:row-reverse;align-self:flex-end;max-width:82%}
+.ia-msg.ia{align-self:flex-start;max-width:90%}
+.ia-msg-avatar{width:28px;height:28px;border-radius:9px;flex-shrink:0;display:flex;align-items:center;justify-content:center;font-size:13px}
+.ia-msg.ia .ia-msg-avatar{background:linear-gradient(135deg,rgba(79,70,229,0.3),rgba(99,102,241,0.12));border:1px solid rgba(79,70,229,0.22)}
+.ia-msg.user .ia-msg-avatar{background:var(--surface2);border:1px solid var(--border)}
+.ia-msg-bubble{padding:10px 13px;border-radius:14px;font-size:13px;line-height:1.58}
+.ia-msg.ia .ia-msg-bubble{background:var(--surface2);border:1px solid var(--border);color:var(--ink2);border-top-left-radius:4px}
+.ia-msg.user .ia-msg-bubble{background:linear-gradient(135deg,var(--indigo),var(--indigo2));color:#fff;border-top-right-radius:4px}
+.ia-opcoes{display:flex;flex-wrap:wrap;gap:6px;margin-top:9px}
+.ia-opcao{font-size:11.5px;font-weight:600;padding:6px 12px;border-radius:20px;border:1px solid var(--border2);color:var(--ink2);background:var(--surface3);cursor:pointer;transition:all .15s;text-align:left}
+.ia-opcao:hover{background:rgba(79,70,229,0.12);border-color:rgba(79,70,229,0.4);color:var(--indigo3)}
+.ia-opcao.selecionada{background:rgba(79,70,229,0.15);border-color:rgba(79,70,229,0.5);color:var(--indigo3);cursor:default}
+.ia-typing-bubble{padding:10px 14px;background:var(--surface2);border:1px solid var(--border);border-radius:14px;border-top-left-radius:4px;display:flex;gap:4px;align-items:center}
+.ia-typing-dot{width:5px;height:5px;border-radius:50%;background:var(--ink3);animation:typing-bounce 1.1s ease-in-out infinite}
+.ia-typing-dot:nth-child(2){animation-delay:.18s}
+.ia-typing-dot:nth-child(3){animation-delay:.36s}
+@keyframes typing-bounce{0%,60%,100%{transform:translateY(0)}30%{transform:translateY(-5px)}}
+.ia-chat-input-row{padding:10px 14px;border-top:1px solid var(--border);display:flex;gap:8px;align-items:flex-end}
+.ia-chat-input{flex:1;background:var(--surface2);border:1px solid var(--border);border-radius:11px;padding:9px 13px;font-size:13px;color:var(--ink);font-family:inherit;resize:none;min-height:38px;max-height:90px;outline:none;transition:border .15s;line-height:1.4}
+.ia-chat-input:focus{border-color:rgba(79,70,229,0.4)}
+.ia-chat-input::placeholder{color:var(--ink4)}
+.ia-chat-send{width:36px;height:36px;border-radius:10px;background:var(--indigo);border:none;cursor:pointer;display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .15s}
+.ia-chat-send:hover{background:var(--indigo2);transform:scale(1.05)}
+.ia-chat-send:disabled{background:var(--surface2);cursor:not-allowed;transform:none}
+.ia-alerta{display:flex;gap:8px;padding:9px 12px;border-radius:10px;font-size:11.5px;font-weight:600;margin-top:7px;line-height:1.45}
+.ia-alerta.critico{background:rgba(220,38,38,0.08);border:1px solid rgba(248,113,113,0.2);color:#FCA5A5}
+.ia-alerta.alto{background:rgba(217,119,6,0.08);border:1px solid rgba(251,191,36,0.2);color:var(--gold2)}
+.ia-alerta.info{background:rgba(79,70,229,0.08);border:1px solid rgba(99,102,241,0.2);color:var(--indigo3)}
+.chat-nova-consulta{font-size:11px;color:var(--ink4);cursor:pointer;text-decoration:underline;text-align:center;padding:4px;display:block;margin-top:4px}
+.chat-nova-consulta:hover{color:var(--ink3)}
+
+/* ── MOBILE ── */
+.bottom-nav{display:none}
+@media(max-width:768px){
+  .sidebar{display:none}
+  .main-content{margin-left:0}
+  .kpi-grid{grid-template-columns:1fr 1fr}
+  .page-grid{grid-template-columns:1fr}
+  .form-row{grid-template-columns:1fr}
+  .action-types{grid-template-columns:1fr 1fr}
+  .bottom-nav{
+    display:flex;position:fixed;bottom:0;left:0;right:0;
+    background:var(--bg2);border-top:1px solid var(--border);
+    padding:8px 0 env(safe-area-inset-bottom);z-index:50;
+  }
+  .bnav-item{
+    flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;
+    padding:8px 4px;cursor:pointer;transition:all .14s;
+    color:var(--ink3);font-size:9.5px;font-weight:600;background:none;border:none;font-family:inherit;
+  }
+  .bnav-item.active{color:var(--indigo3)}
+  .bnav-icon{font-size:19px}
+  .topbar{padding:13px 15px}
+  .page{padding:15px}
+  .escudo-hero-inner{flex-direction:column;text-align:center}
+  .splash-modules-preview{grid-template-columns:1fr 1fr}
+}
+</style>
+</head>
+<body>
+
+<!-- ══════════════════════════════
+     SPLASH
+══════════════════════════════ -->
+<div id="splash" class="screen active">
+  <div class="splash-noise"></div>
+  <div class="splash-glow-1"></div>
+  <div class="splash-glow-2"></div>
+  <div class="splash-lines"></div>
+
+  <div class="splash-inner">
+
+    <!-- Logo Mark -->
+    <div class="logo-mark-wrap">
+      <div class="logo-mark-glow"></div>
+      <svg class="logo-mark-svg" viewBox="0 0 80 80" fill="none" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <linearGradient id="gShield" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#818CF8"/>
+            <stop offset="50%" stop-color="#4F46E5"/>
+            <stop offset="100%" stop-color="#312E81"/>
+          </linearGradient>
+          <linearGradient id="gGreen" x1="0" y1="0" x2="80" y2="80" gradientUnits="userSpaceOnUse">
+            <stop offset="0%" stop-color="#34D399"/>
+            <stop offset="100%" stop-color="#059669"/>
+          </linearGradient>
+          <filter id="fGlow">
+            <feGaussianBlur stdDeviation="2" result="blur"/>
+            <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+          </filter>
+        </defs>
+        <!-- Shield outer -->
+        <path d="M40 6L12 16V36C12 52 25 65 40 72C55 65 68 52 68 36V16L40 6Z"
+              fill="url(#gShield)" opacity="0.15"/>
+        <path d="M40 6L12 16V36C12 52 25 65 40 72C55 65 68 52 68 36V16L40 6Z"
+              fill="none" stroke="url(#gShield)" stroke-width="1.5" opacity="0.6"/>
+        <!-- Building silhouette inside shield -->
+        <rect x="28" y="42" width="6" height="16" rx="1" fill="url(#gShield)" opacity="0.9"/>
+        <rect x="37" y="34" width="6" height="24" rx="1" fill="url(#gShield)"/>
+        <rect x="46" y="38" width="6" height="20" rx="1" fill="url(#gShield)" opacity="0.9"/>
+        <!-- Top accent: check/shield pulse -->
+        <circle cx="40" cy="26" r="8" fill="rgba(79,70,229,0.18)" stroke="url(#gShield)" stroke-width="1.5"/>
+        <path d="M36 26.5l2.5 2.5 5-5" stroke="url(#gGreen)" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" filter="url(#fGlow)"/>
+      </svg>
+    </div>
+
+    <!-- Wordmark -->
+    <div class="splash-wordmark"><span class="wm-s">Syndika</span></div>
+    <div class="splash-tagline">Premium Building Intelligence</div>
+
+    <!-- Status -->
+    <div class="splash-active-badge">
+      <span class="badge-dot"></span>
+      Escudo Jurídico · Ativo
+    </div>
+
+    <!-- Módulo ativo em destaque -->
+    <div class="splash-module-hero">
+      <div class="smh-inner">
+        <div class="smh-icon">
+          <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
+            <path d="M14 2L4 6V14C4 20 8.5 25 14 27C19.5 25 24 20 24 14V6L14 2Z" fill="rgba(79,70,229,0.3)" stroke="#818CF8" stroke-width="1.2"/>
+            <path d="M10 14l2.5 2.5 5.5-5.5" stroke="#34D399" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+          </svg>
+        </div>
+        <div>
+          <div class="smh-label">Módulo 01 · Disponível agora</div>
+          <div class="smh-title">Escudo Jurídico IA</div>
+          <div class="smh-desc">Antes de qualquer ação no condomínio, a IA analisa os riscos legais, gera a documentação necessária e protege o síndico de processos futuros.</div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Preview dos outros módulos (bloqueados) -->
+    <div class="splash-modules-preview">
+      <div class="smp-card">
+        <div class="smp-icon">🛡️</div>
+        <div class="smp-info">
+          <div class="smp-name">Escudo Jurídico</div>
+          <div class="smp-status smp-active">● Ativo agora</div>
+        </div>
+      </div>
+      <div class="smp-card locked">
+        <div class="smp-icon">🏢</div>
+        <div class="smp-info">
+          <div class="smp-name">Sala de Controle</div>
+          <div class="smp-status smp-soon">Em breve</div>
+        </div>
+        <span class="smp-lock">BLOQ.</span>
+      </div>
+      <div class="smp-card locked">
+        <div class="smp-icon">📊</div>
+        <div class="smp-info">
+          <div class="smp-name">Saúde Financeira</div>
+          <div class="smp-status smp-soon">Em breve</div>
+        </div>
+        <span class="smp-lock">BLOQ.</span>
+      </div>
+      <div class="smp-card locked">
+        <div class="smp-icon">🗳️</div>
+        <div class="smp-info">
+          <div class="smp-name">Assembleia Digital</div>
+          <div class="smp-status smp-soon">Em breve</div>
+        </div>
+        <span class="smp-lock">BLOQ.</span>
+      </div>
+    </div>
+
+    <!-- CTA -->
+    <button class="btn-cta" onclick="entrarApp()">
+      Acessar o Escudo Jurídico <span class="btn-cta-arrow">→</span>
+    </button>
+    <div class="splash-footnote">Proteja-se antes de agir. Nenhum cadastro necessário.</div>
+
+  </div>
+</div>
+
+<!-- ══════════════════════════════
+     APP SHELL
+══════════════════════════════ -->
+<div id="app" class="screen">
+
+  <!-- SIDEBAR -->
+  <aside class="sidebar">
+    <div class="sb-head">
+      <div class="sb-head-logo">
+        <svg viewBox="0 0 34 34" fill="none" xmlns="http://www.w3.org/2000/svg">
+          <defs>
+            <linearGradient id="sg1" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#818CF8"/>
+              <stop offset="100%" stop-color="#4338CA"/>
+            </linearGradient>
+            <linearGradient id="sg2" x1="0" y1="0" x2="34" y2="34" gradientUnits="userSpaceOnUse">
+              <stop offset="0%" stop-color="#34D399"/>
+              <stop offset="100%" stop-color="#059669"/>
+            </linearGradient>
+          </defs>
+          <path d="M17 2L5 7V16C5 23 10 29 17 32C24 29 29 23 29 16V7L17 2Z"
+                fill="rgba(79,70,229,0.18)" stroke="url(#sg1)" stroke-width="1.2"/>
+          <rect x="12" y="19" width="3" height="8" rx="0.5" fill="url(#sg1)" opacity="0.9"/>
+          <rect x="15.5" y="15" width="3" height="12" rx="0.5" fill="url(#sg1)"/>
+          <rect x="19" y="17" width="3" height="10" rx="0.5" fill="url(#sg1)" opacity="0.9"/>
+          <circle cx="17" cy="11" r="3.5" fill="rgba(79,70,229,0.15)" stroke="url(#sg1)" stroke-width="1"/>
+          <path d="M15 11.2l1.2 1.2 2.5-2.5" stroke="url(#sg2)" stroke-width="1.4" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+      </div>
+      <div class="sb-head-text"><span class="wm-s">Syndika</span></div>
+    </div>
+
+    <div class="sb-condo">
+      <div class="sb-condo-name" id="sb-condo-name">Res. das Palmeiras</div>
+      <div class="sb-condo-role"><span class="sb-condo-dot"></span> Síndico Profissional</div>
+    </div>
+
+    <nav class="sb-nav">
+      <div class="nav-section">Módulo Ativo</div>
+      <button class="nav-item active" onclick="navTo('escudo',this)">
+        <span class="nav-icon">🛡️</span> Escudo Jurídico
+        <span class="nav-badge">3</span>
+      </button>
+
+      <div class="nav-section">Em Breve</div>
+      <button class="nav-item locked" disabled title="Em breve">
+        <span class="nav-icon">🏢</span> Sala de Controle
+        <span class="nav-lock">BLOQ.</span>
+      </button>
+      <button class="nav-item locked" disabled title="Em breve">
+        <span class="nav-icon">📊</span> Saúde Financeira
+        <span class="nav-lock">BLOQ.</span>
+      </button>
+      <button class="nav-item locked" disabled title="Em breve">
+        <span class="nav-icon">📄</span> Documentos
+        <span class="nav-lock">BLOQ.</span>
+      </button>
+      <button class="nav-item locked" disabled title="Em breve">
+        <span class="nav-icon">🗳️</span> Assembleia
+        <span class="nav-lock">BLOQ.</span>
+      </button>
+      <button class="nav-item locked" disabled title="Em breve">
+        <span class="nav-icon">👥</span> Moradores
+        <span class="nav-lock">BLOQ.</span>
+      </button>
+    </nav>
+
+    <div class="sb-footer">
+      <div class="sb-user">
+        <div class="sb-avatar">👤</div>
+        <div class="sb-user-info">
+          <div class="sb-user-name" id="sb-user-name">Carlos Silva</div>
+          <div class="sb-user-plan">✦ Early Access</div>
+        </div>
+      </div>
+    </div>
+  </aside>
+
+  <!-- MAIN -->
+  <main class="main-content">
+
+    <!-- ── PÁGINA: ESCUDO JURÍDICO ── -->
+    <div id="page-escudo" class="page active">
+      <div class="topbar">
+        <div class="topbar-title">🛡️ Escudo Jurídico</div>
+        <div class="topbar-right">
+          <button class="tb-btn tb-btn-primary" onclick="openModal('modal-nova-acao')">+ Nova ação</button>
+        </div>
+      </div>
+      <div class="page-body" style="padding:26px">
+
+        <!-- Hero -->
+        <div class="escudo-hero">
+          <div class="escudo-hero-inner">
+            <div class="escudo-shield-icon">
+              <svg width="34" height="34" viewBox="0 0 34 34" fill="none">
+                <path d="M17 2L5 7V16C5 23 10 29 17 32C24 29 29 23 29 16V7L17 2Z"
+                      fill="rgba(79,70,229,0.2)" stroke="#818CF8" stroke-width="1.2"/>
+                <path d="M12 16.5l3 3 7-7" stroke="#34D399" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"/>
+              </svg>
+            </div>
+            <div>
+              <div class="escudo-label">Proteção ativa · IA Jurídica</div>
+              <div class="escudo-title">Você está protegido hoje.</div>
+              <div class="escudo-sub">Cada ação documentada aqui é juridicamente rastreável. Antes de executar, a IA analisa os riscos com base no Código Civil e na Lei dos Condomínios — e gera os documentos necessários.</div>
+              <div class="escudo-stats">
+                <div class="esc-stat">
+                  <span class="esc-stat-n" style="color:var(--green2)">3</span>
+                  <span class="esc-stat-l">Ações protegidas</span>
+                </div>
+                <div class="esc-div"></div>
+                <div class="esc-stat">
+                  <span class="esc-stat-n" style="color:var(--gold2)">1</span>
+                  <span class="esc-stat-l">Pendente docs</span>
+                </div>
+                <div class="esc-div"></div>
+                <div class="esc-stat">
+                  <span class="esc-stat-n" style="color:var(--indigo3)">0</span>
+                  <span class="esc-stat-l">Incidentes ativos</span>
+                </div>
+              </div>
+            </div>
+          </div>
+          <!-- Fluxo visual -->
+          <div class="escudo-flow">
+            <span class="flow-step done">✓ Descreva a ação</span>
+            <span class="flow-arrow">›</span>
+            <span class="flow-step done">✓ IA analisa riscos</span>
+            <span class="flow-arrow">›</span>
+            <span class="flow-step curr">● Gerar documentos</span>
+            <span class="flow-arrow">›</span>
+            <span class="flow-step">Executar protegido</span>
+          </div>
+        </div>
+
+        <!-- Formulário nova ação -->
+        <div class="action-form">
+          <div class="action-form-title">
+            <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+              <path d="M9 1L2 4V9C2 13 5 16.5 9 18C13 16.5 16 13 16 9V4L9 1Z" fill="rgba(79,70,229,0.2)" stroke="#818CF8" stroke-width="1.2"/>
+              <path d="M6 9l2 2 4-4" stroke="#34D399" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/>
+            </svg>
+            Analisar nova ação
+          </div>
+
+          <span class="form-label">Tipo de ação</span>
+          <div class="action-types" style="margin-bottom:14px">
+            <button class="at-btn selected" onclick="selectActionType(this)"><span class="at-emoji">🌳</span><span class="at-label">Manutenção</span></button>
+            <button class="at-btn" onclick="selectActionType(this)"><span class="at-emoji">👷</span><span class="at-label">Obras/Reforma</span></button>
+            <button class="at-btn" onclick="selectActionType(this)"><span class="at-emoji">💼</span><span class="at-label">RH/Funcionário</span></button>
+            <button class="at-btn" onclick="selectActionType(this)"><span class="at-emoji">⚠️</span><span class="at-label">Advertência</span></button>
+            <button class="at-btn" onclick="selectActionType(this)"><span class="at-emoji">💰</span><span class="at-label">Financeiro</span></button>
+            <button class="at-btn" onclick="selectActionType(this)"><span class="at-emoji">📋</span><span class="at-label">Outro</span></button>
+          </div>
+
+          <div class="form-group">
+            <span class="form-label">Descreva a ação que pretende tomar</span>
+            <textarea id="acao-descricao" class="form-input form-textarea" placeholder="Ex: Contratar empresa para podar as árvores da área de lazer..."></textarea>
+            <div id="formal-preview-badge" class="formal-badge">
+              <div class="formal-badge-label">✦ Versão formal para os documentos</div>
+              <span id="formal-preview-texto"></span>
+            </div>
+          </div>
+
+          <div class="form-row">
+            <div class="form-group">
+              <span class="form-label">Data prevista</span>
+              <div class="date-field-wrap">
+                <input type="text" class="form-input" id="acao-data" readonly placeholder="Selecionar data" onclick="openCalendar('acao-data')">
+              </div>
+            </div>
+            <div class="form-group">
+              <span class="form-label">Valor estimado (R$)</span>
+              <input type="text" class="form-input" placeholder="Ex: 2.500,00" id="acao-valor">
+            </div>
+          </div>
+
+          <!-- Analisando -->
+          <div id="risk-analyzing" class="risk-analyzing">
+            <div class="analyzing-ring"></div>
+            <div style="font-size:14px;font-weight:700;color:var(--ink2);margin-bottom:8px">Analisando riscos jurídicos...</div>
+            <div id="loading-fontes" style="display:flex;flex-direction:column;gap:5px;max-width:340px;margin:0 auto"></div>
+          </div>
+
+          <!-- Resultado dinâmico -->
+          <div id="risk-result-section" class="risk-result-section"></div>
+
+          <!-- Docs gerados dinâmicos -->
+          <div id="docs-gerados-section" style="display:none;margin-top:12px"></div>
+
+          <!-- Botão analisar -->
+          <div id="btn-analisar-wrap">
+            <button class="btn-full btn-indigo" onclick="analisarRisco()">🔍 Analisar riscos com IA</button>
+          </div>
+        </div>
+
+        <!-- Histórico -->
+        <div class="card">
+          <div class="card-title">📋 Histórico de ações protegidas</div>
+          <div class="history-item">
+            <div class="history-icon" style="background:var(--green-bg)">🛡️</div>
+            <div style="flex:1">
+              <div class="history-title">Demissão de porteiro — Lucas Ferreira</div>
+              <div class="history-meta">15 abr 2025 · 3 documentos gerados</div>
+            </div>
+            <span class="history-tag ht-ok">Protegido</span>
+          </div>
+          <div class="history-item">
+            <div class="history-icon" style="background:var(--green-bg)">🛡️</div>
+            <div style="flex:1">
+              <div class="history-title">Obra na fachada — empresa terceirizada</div>
+              <div class="history-meta">02 abr 2025 · 4 documentos gerados</div>
+            </div>
+            <span class="history-tag ht-ok">Protegido</span>
+          </div>
+          <div class="history-item">
+            <div class="history-icon" style="background:var(--yellow-bg)">⚠️</div>
+            <div style="flex:1">
+              <div class="history-title">Advertência formal — Apto 302</div>
+              <div class="history-meta">28 mar 2025 · Aguardando assinatura</div>
+            </div>
+            <span class="history-tag ht-pend">Pendente</span>
+          </div>
+        </div>
+
+      </div>
+    </div><!-- /page-escudo -->
+
+  </main>
+
+  <!-- BOTTOM NAV (mobile) -->
+  <nav class="bottom-nav">
+    <button class="bnav-item active" onclick="navTo('escudo',this)">
+      <span class="bnav-icon">🛡️</span>Escudo
+    </button>
+  </nav>
+
+</div><!-- /app -->
+
+<!-- ── VIEWER DE DOCUMENTO (slide-over) ── -->
+<div id="doc-viewer" class="viewer-overlay">
+  <div class="viewer-sheet">
+    <div class="viewer-head">
+      <div class="viewer-head-info">
+        <div class="viewer-doc-type" id="vwr-tipo">Documento</div>
+        <div class="viewer-doc-title" id="vwr-titulo">—</div>
+      </div>
+      <div class="viewer-head-btns">
+        <button class="viewer-btn viewer-btn-pdf" id="vwr-btn-pdf">↓ Baixar PDF</button>
+        <button class="viewer-btn viewer-btn-close" onclick="fecharViewer()">✕ Fechar</button>
+      </div>
+    </div>
+    <div class="viewer-body">
+      <div class="viewer-paper" id="vwr-paper"><!-- preenchido por JS --></div>
+    </div>
+  </div>
+</div>
+
+<!-- ── MODAL: Nova ação rápida ── -->
+<div id="modal-nova-acao" class="modal-overlay">
+  <div class="modal">
+    <button class="modal-close" onclick="closeModal('modal-nova-acao')">✕</button>
+    <div style="font-size:28px;margin-bottom:10px">🛡️</div>
+    <div class="modal-title">Nova ação jurídica</div>
+    <div class="modal-sub">Descreva o que pretende fazer. A IA verifica os riscos e prepara toda a documentação.</div>
+
+    <div class="form-group">
+      <span class="form-label">Tipo de ação</span>
+      <select id="modal-tipo-select" class="form-input form-select" onchange="modalSincTipo()">
+        <option value="manutencao">🌳 Manutenção / Serviço</option>
+        <option value="obra">👷 Obra / Reforma</option>
+        <option value="rh">💼 Demissão / Contratação</option>
+        <option value="advertencia">⚠️ Advertência a morador</option>
+        <option value="financeiro">💰 Decisão financeira</option>
+        <option value="outro">📋 Outra ação</option>
+      </select>
+    </div>
+
+    <div class="form-group">
+      <span class="form-label">Descreva a ação</span>
+      <textarea id="modal-descricao" class="form-input form-textarea"
+        placeholder="Ex: Quero demitir o porteiro que faltou 3 dias sem avisar..."
+        oninput="modalAutoDetect()"></textarea>
+    </div>
+
+    <div id="modal-autodetect-badge" style="display:none;font-size:11px;font-weight:700;color:var(--indigo3);background:rgba(79,70,229,0.08);border:1px solid rgba(79,70,229,0.2);border-radius:8px;padding:7px 12px;margin-bottom:12px;display:none;align-items:center;gap:6px">
+      <span style="width:6px;height:6px;background:var(--indigo3);border-radius:50%;display:inline-block;flex-shrink:0"></span>
+      <span id="modal-autodetect-texto">Tipo detectado automaticamente</span>
+    </div>
+
+    <div class="form-row" style="margin-bottom:14px">
+      <div class="form-group" style="margin-bottom:0">
+        <span class="form-label">Data prevista</span>
+        <div class="date-field-wrap">
+          <input type="text" id="modal-data" class="form-input" readonly placeholder="Selecionar data" onclick="openCalendar('modal-data')">
+        </div>
+      </div>
+      <div class="form-group" style="margin-bottom:0">
+        <span class="form-label">Valor estimado (R$)</span>
+        <input type="text" id="modal-valor" class="form-input" placeholder="Ex: 2.500,00">
+      </div>
+    </div>
+
+    <button class="btn-full btn-indigo" onclick="iniciarAnaliseModal()">🔍 Analisar riscos e gerar documentos</button>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════════════
+//  ENGINE DE REGRAS JURÍDICAS — 6 tipos de ação
+// ══════════════════════════════════════════════════
+var TIPOS = {
+  manutencao: {
+    label:'Manutenção / Serviço', risco:'alto', confianca:94,
+    fontes:['Art. 1.348 CC — poderes do síndico','Lei 4.591/64 art. 22 — deveres condominiais','STJ REsp 1.644.107/SP — responsabilidade civil'],
+    titulo:'Ação requer deliberação e documentação prévia',
+    descricao:'Serviços de manutenção em área condominial exigem deliberação do conselho, laudo técnico da empresa e comunicado prévio. Sem esses documentos, o síndico responde pessoalmente por danos materiais ou pessoais.',
+    docs:['ata','laudo','comunicado','seguro']
+  },
+  obra: {
+    label:'Obra / Reforma', risco:'critico', confianca:97,
+    fontes:['Art. 1.341 CC — obras em condomínio','ABNT NBR 16.280:2015 — reforma em condomínio','Lei 6.496/77 — ART obrigatória','NR-18 — segurança em obras'],
+    titulo:'Risco crítico — ART/RRT e aprovação em assembleia obrigatórios',
+    descricao:'Obras exigem aprovação em assembleia (quórum 2/3 para obras voluptuárias), ART ou RRT do responsável técnico, comunicado com prazo mínimo de 10 dias e, dependendo do porte, alvará municipal.',
+    docs:['ata','laudo','comunicado','seguro']
+  },
+  rh: {
+    label:'RH / Funcionário', risco:'alto', confianca:91,
+    fontes:['CLT art. 477 — rescisão contratual','Súmula 331 TST — terceirização','Lei 8.036/90 — FGTS','CF art. 7º — direitos trabalhistas'],
+    titulo:'Rescisão exige rito correto para evitar passivo trabalhista',
+    descricao:'Demissões sem justa causa seguem a CLT rigorosamente. O síndico responde pessoalmente se o rito não for cumprido: aviso prévio, FGTS + multa 40%, TRCT e, se >1 ano, homologação no sindicato.',
+    docs:['ata','laudo','comunicado','seguro']
+  },
+  advertencia: {
+    label:'Advertência a Morador', risco:'medio', confianca:89,
+    fontes:['Art. 1.337 CC — multa condominial','Lei 4.591/64 art. 19 — infrações','CF art. 5º LV — contraditório e ampla defesa','Convenção condominial'],
+    titulo:'Advertência sem AR e fundamentação pode ser anulada judicialmente',
+    descricao:'Advertências sem base expressa na convenção ou sem comprovação de recebimento (AR) são frequentemente anuladas. O morador tem direito de defesa antes de qualquer multa.',
+    docs:['ata','comunicado','laudo','seguro']
+  },
+  financeiro: {
+    label:'Decisão Financeira', risco:'medio', confianca:88,
+    fontes:['Art. 1.348 CC — prestação de contas','Lei 4.591/64 art. 22 — obrigações do síndico','NBC TG 1000 — demonstrações financeiras'],
+    titulo:'Gastos extraordinários requerem previsão orçamentária ou ratificação',
+    descricao:'Despesas não previstas no orçamento aprovado em assembleia podem gerar questionamentos e ação de prestação de contas. O síndico deve documentar a urgência ou submeter à aprovação.',
+    docs:['ata','comunicado','laudo','seguro']
+  },
+  outro: {
+    label:'Outra Ação Administrativa', risco:'medio', confianca:82,
+    fontes:['Art. 1.348 CC — poderes gerais do síndico','Lei 4.591/64 — gestão condominial'],
+    titulo:'Documentação preventiva recomendada para qualquer ação relevante',
+    descricao:'Para qualquer ato administrativo relevante, recomenda-se registrar a deliberação em ata, comunicar os moradores e arquivar evidências. Isso protege o síndico em eventual questionamento.',
+    docs:['ata','comunicado','laudo','seguro']
+  }
+};
+
+var CHECKLISTS = {
+  manutencao:[
+    {titulo:'Ata de deliberação do conselho',          legal:'Art. 1.348 CC — base legal obrigatória',          req:true,  doc:'ata'},
+    {titulo:'Laudo técnico da empresa contratada',     legal:'Art. 927 CC — responsabilidade civil',            req:true,  doc:'laudo'},
+    {titulo:'Comunicado aos moradores (mín. 5 dias)',  legal:'Art. 1.336 CC — transparência condominial',       req:false, doc:'comunicado'},
+    {titulo:'Comprovante de seguro RC da empresa',     legal:'Cobre danos a terceiros durante a execução',      req:false, doc:'seguro'}
+  ],
+  obra:[
+    {titulo:'Aprovação em assembleia (quórum 2/3)',    legal:'Art. 1.341 CC — obras voluptuárias',              req:true,  doc:'ata'},
+    {titulo:'ART ou RRT do responsável técnico',       legal:'Lei 6.496/77 — obrigatório para obras',           req:true,  doc:'laudo'},
+    {titulo:'Comunicado prévio (mín. 10 dias)',        legal:'Art. 1.336 CC + convenção condominial',           req:false, doc:'comunicado'},
+    {titulo:'Alvará municipal (se necessário)',        legal:'Legislação municipal de uso e ocupação do solo',  req:false, doc:'seguro'}
+  ],
+  rh:[
+    {titulo:'Carta de aviso prévio (mín. 30 dias)',    legal:'CLT art. 487 — rescisão sem justa causa',         req:true,  doc:'ata'},
+    {titulo:'TRCT — Termo de Rescisão Contratual',     legal:'CLT art. 477 — obrigatório em toda rescisão',     req:true,  doc:'laudo'},
+    {titulo:'Homologação no sindicato (se >1 ano)',    legal:'CLT art. 477 §1º — trabalhadores com vínculo',    req:true,  doc:'comunicado'},
+    {titulo:'Saque FGTS + multa 40% comprovado',       legal:'CF art. 7º, III + Lei 8.036/90',                 req:false, doc:'seguro'}
+  ],
+  advertencia:[
+    {titulo:'Notificação por escrito com AR',          legal:'Art. 1.337 CC — devido processo condominial',     req:true,  doc:'ata'},
+    {titulo:'Fundamentação no artigo da convenção',   legal:'Lei 4.591/64 art. 19 — base convencional',        req:true,  doc:'comunicado'},
+    {titulo:'Prazo de defesa ao morador (mín. 5 dias)',legal:'CF art. 5º LV — contraditório e ampla defesa',   req:false, doc:'laudo'},
+    {titulo:'Ata de deliberação para aplicação de multa',legal:'Art. 1.337 CC — multa até 5x a cota mensal',   req:false, doc:'seguro'}
+  ],
+  financeiro:[
+    {titulo:'Verificar previsão no orçamento aprovado',legal:'Art. 1.348 CC — prestação de contas ao conselho',req:true,  doc:'ata'},
+    {titulo:'Três orçamentos de fornecedores distintos',legal:'Boa prática — transparência e economicidade',   req:true,  doc:'laudo'},
+    {titulo:'Comunicado de gasto extraordinário',      legal:'Art. 1.348 CC — dever de informar moradores',    req:false, doc:'comunicado'},
+    {titulo:'Nota fiscal e contrato arquivados',       legal:'Lei 4.591/64 art. 22 — documentação obrigatória',req:false, doc:'seguro'}
+  ],
+  outro:[
+    {titulo:'Registrar deliberação em ata',            legal:'Art. 1.348 CC — poder de gestão condominial',    req:true,  doc:'ata'},
+    {titulo:'Comunicado formal aos moradores',         legal:'Art. 1.336 CC — transparência condominial',      req:false, doc:'comunicado'},
+    {titulo:'Documentação de suporte arquivada',       legal:'Lei 4.591/64 — guarda obrigatória de documentos',req:false, doc:'laudo'},
+    {titulo:'Verificar previsão na convenção',         legal:'Convenção condominial — limites do síndico',     req:false, doc:'seguro'}
+  ]
+};
+
+var DOC_INFO = {
+  ata:       {emoji:'📋', label:'Ata de Deliberação',       badge:'Gerado', badgeCor:'green', meta:'Base: Art. 1.348 CC · Validade jurídica obrigatória'},
+  laudo:     {emoji:'🔬', label:'Laudo / Documento Técnico', badge:'Preencher empresa', badgeCor:'gold', meta:'Base: Art. 927 CC · Responsabilidade civil do contratante'},
+  comunicado:{emoji:'📢', label:'Comunicado Formal',         badge:'Gerado', badgeCor:'green', meta:'Base: Art. 1.336 CC · Prazo mínimo de antecedência'},
+  seguro:    {emoji:'🔒', label:'Checklist Seguro RC',       badge:'Gerado', badgeCor:'green', meta:'Cobre danos a terceiros durante a execução do serviço'}
+};
+
+var RISCO_COR = {
+  critico:{bg:'rgba(220,38,38,0.08)',border:'rgba(248,113,113,0.25)',badge:'rb-critico',icon:'🔴',label:'Risco Crítico'},
+  alto:   {bg:'rgba(217,119,6,0.08)', border:'rgba(251,191,36,0.25)', badge:'rb-alto',   icon:'⚠',  label:'Risco Alto'},
+  medio:  {bg:'rgba(79,70,229,0.08)', border:'rgba(99,102,241,0.25)', badge:'rb-medio',  icon:'ℹ',  label:'Risco Moderado'},
+  baixo:  {bg:'var(--green-bg)',      border:'var(--green-border)',   badge:'rb-baixo',  icon:'✓',  label:'Risco Baixo'}
+};
+
+// ── DETECTAR TIPO — texto tem prioridade sobre botão ─
+var KEYWORDS = {
+  rh:          ['porteiro','zelador','faxineiro','funcionario','funcionária','funcionário','demitir','demissão','demissao','justa causa','rescisão','rescisao','trabalhista','empregado','empregada','fgts','clt','aviso previo','aviso prévio','contratacao','contratação','salario','salário','holerite','folha de pagamento','sindicato','terceirizado'],
+  obra:        ['obra','reform','construção','construcao','construir','art ','rrt ','fachada','estrutural','alvenaria','reboco','hidraulic','eletric','andaime','nbr ','prefeitura','alvara','alvará'],
+  manutencao:  ['poda','manutencao','manutenção','reparo','consertar','pintura','jardim','jardineiro','elevador','bomba','infiltracao','infiltração','telhado','goteira','calçada','calcada','dedetiz','limpeza','piscina','playground'],
+  advertencia: ['advertencia','advertência','multar','multa','morador','barulho','infração','infracao','convencao','convenção','notificar','reclamacao','reclamação','vizinho','ruido','ruído','festa','perturbacao','perturbação'],
+  financeiro:  ['orcamento','orçamento','cota','taxa condominial','financeiro','comprar','custo','despesa','fundo de reserva','prestacao de contas','prestação de contas','inadimplente','inadimplencia','boleto','cobrança']
+};
+
+function detectarTipoPorTexto(descricao) {
+  var texto = descricao.toLowerCase()
+    .normalize('NFD').replace(/[\u0300-\u036f]/g, ''); // remove acentos para comparação
+  var pontos = { manutencao:0, obra:0, rh:0, advertencia:0, financeiro:0, outro:0 };
+  for (var tipo in KEYWORDS) {
+    KEYWORDS[tipo].forEach(function(kw) {
+      var kwNorm = kw.normalize('NFD').replace(/[\u0300-\u036f]/g,'');
+      if (texto.includes(kwNorm)) pontos[tipo] += 2;
+    });
+  }
+  var melhor = null, maxPts = 0;
+  for (var t in pontos) {
+    if (pontos[t] > maxPts) { maxPts = pontos[t]; melhor = t; }
+  }
+  return maxPts >= 2 ? melhor : null;
+}
+
+function getTipoSelecionado() {
+  // 1. Tenta detectar pelo texto digitado (maior confiabilidade)
+  var descEl = document.getElementById('acao-descricao');
+  if (descEl && descEl.value.trim().length > 5) {
+    var detectado = detectarTipoPorTexto(descEl.value);
+    if (detectado) return detectado;
+  }
+  // 2. Fallback: botão selecionado
+  var selecionado = document.querySelector('.at-btn.selected .at-label');
+  if (!selecionado) return 'manutencao';
+  var texto = selecionado.textContent.toLowerCase();
+  if (texto.includes('obra') || texto.includes('reform')) return 'obra';
+  if (texto.includes('rh') || texto.includes('func')) return 'rh';
+  if (texto.includes('advert')) return 'advertencia';
+  if (texto.includes('financ')) return 'financeiro';
+  if (texto.includes('outro') || texto.includes('outr')) return 'outro';
+  return 'manutencao';
+}
+
+// ── AUTO-DETECTAR AO DIGITAR — atualiza botão em tempo real ──
+function sincronizarBotaoComTexto() {
+  var descEl = document.getElementById('acao-descricao');
+  if (!descEl) return;
+  var detectado = detectarTipoPorTexto(descEl.value);
+  if (!detectado) return;
+  var mapa = { manutencao:0, obra:1, rh:2, advertencia:3, financeiro:4, outro:5 };
+  var btns = document.querySelectorAll('.at-btn');
+  var idx = mapa[detectado];
+  if (btns[idx] && !btns[idx].classList.contains('selected')) {
+    btns.forEach(function(b){ b.classList.remove('selected'); });
+    btns[idx].classList.add('selected');
+    // Badge de detecção automática
+    var badge = document.getElementById('auto-detect-badge');
+    if (!badge) {
+      badge = document.createElement('div');
+      badge.id = 'auto-detect-badge';
+      badge.style.cssText = 'font-size:11px;font-weight:700;color:var(--indigo3);background:rgba(79,70,229,0.08);border:1px solid rgba(79,70,229,0.2);border-radius:8px;padding:6px 12px;margin-top:8px;display:flex;align-items:center;gap:6px';
+      btns[0].closest('.action-types').insertAdjacentElement('afterend', badge);
+    }
+    badge.innerHTML = '<span style="width:6px;height:6px;background:var(--indigo3);border-radius:50%;display:inline-block"></span> Tipo detectado automaticamente: <strong style="color:var(--ink)">'+TIPOS[detectado].label+'</strong>';
+  }
+}
+
+// ── DADOS DO CONDOMÍNIO ──────────────────────────
+function getDados() {
+  var acaoRaw = document.getElementById('acao-descricao') ? (document.getElementById('acao-descricao').value || 'Serviço condominial') : 'Serviço condominial';
+  var tipo = getTipoSelecionado();
+  return {
+    condo:      document.getElementById('sb-condo-name') ? document.getElementById('sb-condo-name').textContent : 'Condomínio',
+    sindico:    document.getElementById('sb-user-name')  ? document.getElementById('sb-user-name').textContent  : 'Síndico',
+    acao:       acaoRaw,
+    acaoFormal: formalizarTexto(acaoRaw, tipo),
+    data:       document.getElementById('acao-data')  ? (document.getElementById('acao-data').value  || hoje()) : hoje(),
+    valor:      document.getElementById('acao-valor') ? (document.getElementById('acao-valor').value || '—')    : '—'
+  };
+}
+function hoje() {
+  var d = new Date();
+  return d.toLocaleDateString('pt-BR', { day:'2-digit', month:'long', year:'numeric' });
+}
+
+// ── ENTRADA NO APP ───────────────────────────────
+function entrarApp() {
+  var splash = document.getElementById('splash');
+  splash.classList.remove('active');
+  splash.style.display = 'none';
+  var app = document.getElementById('app');
+  app.classList.add('active');
+  app.style.display = 'block';
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  var pg = document.getElementById('page-escudo');
+  if (pg) pg.classList.add('active');
+  var firstNav = document.querySelector('.nav-item:not([disabled])');
+  if (firstNav) {
+    document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+    firstNav.classList.add('active');
+  }
+}
+
+// ── NAVEGAÇÃO ────────────────────────────────────
+function navTo(pageId, navEl) {
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  var pg = document.getElementById('page-' + pageId);
+  if (pg) pg.classList.add('active');
+  document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+  if (navEl && navEl.classList && navEl.classList.contains('nav-item')) navEl.classList.add('active');
+  document.querySelectorAll('.bnav-item').forEach(function(n){ n.classList.remove('active'); });
+  if (navEl && navEl.classList && navEl.classList.contains('bnav-item')) navEl.classList.add('active');
+  window.scrollTo(0,0);
+}
+
+// ── MODAIS ───────────────────────────────────────
+function openModal(id) {
+  document.getElementById(id).classList.add('open');
+  if (id === 'modal-nova-acao') {
+    // Reset campos do modal
+    var sel = document.getElementById('modal-tipo-select');
+    var desc = document.getElementById('modal-descricao');
+    var badge = document.getElementById('modal-autodetect-badge');
+    if (sel)   sel.value = 'manutencao';
+    if (desc)  desc.value = '';
+    if (badge) badge.style.display = 'none';
+    var mData = document.getElementById('modal-data');
+    var mValor = document.getElementById('modal-valor');
+    if (mData)  mData.value = '';
+    if (mValor) mValor.value = '';
+  }
+}
+function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+document.querySelectorAll('.modal-overlay').forEach(function(el) {
+  el.addEventListener('click', function(e) { if (e.target === el) el.classList.remove('open'); });
+});
+
+// ── TIPO DE AÇÃO ─────────────────────────────────
+function selectActionType(btn) {
+  document.querySelectorAll('.at-btn').forEach(function(b){ b.classList.remove('selected'); });
+  btn.classList.add('selected');
+}
+
+// ── ANÁLISE DE RISCO — loading animado (Ideia C) ─
+function analisarRisco() {
+  var tipo = getTipoSelecionado();
+  var t = TIPOS[tipo];
+  document.getElementById('btn-analisar-wrap').style.display = 'none';
+  document.getElementById('risk-result-section').classList.remove('show');
+  document.getElementById('risk-result-section').innerHTML = '';
+  document.getElementById('docs-gerados-section').style.display = 'none';
+  document.getElementById('risk-analyzing').classList.add('show');
+
+  // Anima as fontes consultadas
+  var fonteEl = document.getElementById('loading-fontes');
+  fonteEl.innerHTML = '';
+  var fontes = t.fontes;
+  fontes.forEach(function(f, i) {
+    var div = document.createElement('div');
+    div.className = 'fonte-step';
+    div.innerHTML = '<span class="fonte-dot"></span>' + f;
+    fonteEl.appendChild(div);
+    setTimeout(function(){ div.classList.add('show'); }, i * 420 + 200);
+    setTimeout(function(){ div.classList.add('ok'); div.innerHTML = '<span class="fonte-dot"></span>✓ ' + f; }, i * 420 + 700);
+  });
+
+  var totalTempo = fontes.length * 420 + 900;
+  setTimeout(function() {
+    document.getElementById('risk-analyzing').classList.remove('show');
+    renderResultado(tipo);
+  }, totalTempo);
+}
+
+// ── RENDERIZAR RESULTADO DINÂMICO (Ideia B + D) ──
+function renderResultado(tipo) {
+  var t = TIPOS[tipo];
+  var cl = CHECKLISTS[tipo];
+  var rc = RISCO_COR[t.risco] || RISCO_COR.medio;
+  var sec = document.getElementById('risk-result-section');
+
+  var checkHtml = cl.map(function(item) {
+    return '<div class="check-item" data-doc="'+item.doc+'"><div class="check-box"></div><div><div class="check-item-title">'+item.titulo+(item.req?'<span class="check-req">Obrigatório</span>':'')+'</div><div class="check-item-legal">'+item.legal+'</div></div></div>';
+  }).join('');
+
+  sec.innerHTML =
+    '<div class="risk-result" style="background:'+rc.bg+';border:1px solid '+rc.border+';border-radius:var(--r-xl);padding:20px;margin-bottom:14px">'+
+      '<div class="risk-result-header" style="display:flex;align-items:center;gap:10px;margin-bottom:12px;flex-wrap:wrap">'+
+        '<span class="risk-badge '+rc.badge+'" style="padding:5px 12px;border-radius:20px;font-size:11px;font-weight:800">'+rc.icon+' '+rc.label+'</span>'+
+        '<span class="risk-result-title" style="font-size:15px;font-weight:800">'+t.titulo+'</span>'+
+        '<span class="conf-badge">✓ '+t.confianca+'% confiança · '+t.fontes.length+' fontes</span>'+
+      '</div>'+
+      '<div style="font-size:12.5px;color:var(--ink3);line-height:1.6;margin-bottom:14px">'+t.descricao+'</div>'+
+      '<div style="font-size:10px;font-weight:700;color:var(--ink4);letter-spacing:1px;text-transform:uppercase;margin-bottom:8px">Base jurídica consultada</div>'+
+      '<div style="display:flex;flex-wrap:wrap;gap:6px;margin-bottom:14px">'+
+        t.fontes.map(function(f){ return '<span style="font-size:10.5px;font-weight:600;color:var(--indigo3);background:rgba(79,70,229,0.08);border:1px solid rgba(79,70,229,0.18);padding:3px 9px;border-radius:20px">'+f+'</span>'; }).join('')+
+      '</div>'+
+      '<div class="checklist">'+checkHtml+'</div>'+
+    '</div>'+
+    '<button class="btn-full btn-green" onclick="gerarDocumentos()">⚡ Gerar todos os documentos agora</button>';
+
+  sec.classList.add('show');
+}
+
+// ── GERAR DOCUMENTOS DINÂMICOS (Ideia E) ─────────
+function gerarDocumentos() {
+  var tipo = getTipoSelecionado();
+  var t = TIPOS[tipo];
+  var cl = CHECKLISTS[tipo];
+  var sec = document.getElementById('docs-gerados-section');
+  var n = t.docs.length;
+
+  var cardsHtml = t.docs.map(function(docId) {
+    var info = DOC_INFO[docId];
+    var badgeStyle = docId === 'laudo'
+      ? 'color:var(--gold2);background:var(--yellow-bg);border:1px solid var(--yellow-border)'
+      : 'color:var(--green2);background:var(--green-bg);border:1px solid var(--green-border)';
+    return '<div class="doc-gen">'+
+      '<div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:3px">'+
+        '<div class="doc-gen-type">'+info.emoji+' '+info.label+'</div>'+
+        '<span style="font-size:9px;font-weight:700;padding:2px 8px;border-radius:8px;'+badgeStyle+'">'+info.badge+'</span>'+
+      '</div>'+
+      '<div class="doc-gen-meta" style="margin-top:3px">'+info.meta+'</div>'+
+      '<div class="doc-btns">'+
+        '<button class="doc-btn doc-btn-p" onclick="baixarPDF(\''+docId+'\')">↓ Baixar PDF</button>'+
+        '<button class="doc-btn doc-btn-s" onclick="abrirViewer(\''+docId+'\')">👁 Visualizar</button>'+
+      '</div>'+
+    '</div>';
+  }).join('');
+
+  sec.innerHTML =
+    '<div class="divider"></div>'+
+    '<div class="section-title">📁 Documentos gerados <span style="font-size:11px;font-weight:600;color:var(--green2);background:var(--green-bg);border:1px solid var(--green-border);padding:3px 10px;border-radius:20px;margin-left:8px">'+n+' documentos</span></div>'+
+    cardsHtml+
+    '<div style="background:var(--green-bg);border:1px solid var(--green-border);border-radius:12px;padding:13px 16px;margin-top:8px;display:flex;align-items:center;gap:10px">'+
+      '<span style="font-size:18px">🛡️</span>'+
+      '<div><div style="font-size:12px;font-weight:800;color:var(--green2)">Proteção jurídica ativada</div>'+
+      '<div style="font-size:11px;color:var(--ink3);margin-top:2px">Documentos gerados com base no CC/02 e Lei 4.591/64. Revise com seu advogado antes de assinar.</div></div>'+
+    '</div>';
+
+  sec.style.display = 'block';
+  setTimeout(function(){ sec.scrollIntoView({ behavior:'smooth', block:'start' }); }, 100);
+}
+
+// ── VIEWER IN-PAGE (Ideia A) ──────────────────────
+function abrirViewer(tipo) {
+  var d = getDados();
+  var info = DOC_INFO[tipo];
+  var tipoSel = getTipoSelecionado();
+  var cl = CHECKLISTS[tipoSel];
+
+  document.getElementById('vwr-tipo').textContent = info.label;
+  document.getElementById('vwr-titulo').textContent = montarTituloDoc(tipo, d);
+  document.getElementById('vwr-btn-pdf').onclick = function(){ baixarPDF(tipo); };
+  document.getElementById('vwr-paper').innerHTML = montarPaperHtml(tipo, d, cl);
+  document.getElementById('doc-viewer').classList.add('open');
+}
+function fecharViewer() {
+  document.getElementById('doc-viewer').classList.remove('open');
+}
+document.getElementById('doc-viewer').addEventListener('click', function(e){
+  if (e.target === this) fecharViewer();
+});
+
+function montarTituloDoc(tipo, d) {
+  var titulos = {
+    ata:       'Ata de Deliberação — ' + d.condo,
+    laudo:     'Template de Laudo Técnico',
+    comunicado:'Comunicado aos Moradores — ' + d.condo,
+    seguro:    'Checklist de Responsabilidade Civil'
+  };
+  return titulos[tipo] || tipo;
+}
+
+function montarPaperHtml(tipo, d, cl) {
+  var info = DOC_INFO[tipo];
+  var corStripe = {ata:'#4F46E5',laudo:'#059669',comunicado:'#3B82F6',seguro:'#DC2626'};
+  var corpo = '';
+
+  if (tipo === 'ata') {
+    var itensCheck = cl.map(function(c){ return '<div class="vp-check"><div class="vp-check-box">☐</div><div><div>'+c.titulo+(c.req?' <strong style="color:#DC2626;font-size:10px">[Obrigatório]</strong>':'')+'</div><div class="vp-check-legal">'+c.legal+'</div></div></div>'; }).join('');
+    corpo = '<div class="vp-section"><div class="vp-section-title">1. Identificação</div>'+
+      '<p class="vp-text">Reunidos em <strong>'+d.data+'</strong>, os membros do Conselho Consultivo do <strong>'+d.condo+'</strong>, em reunião ordinária, deliberaram sobre:</p>'+
+      '<div class="vp-highlight">'+d.acaoFormal+'</div></div>'+
+      '<div class="vp-section"><div class="vp-section-title">2. Deliberação</div>'+
+      '<p class="vp-text">O Conselho Consultivo, por maioria de votos, <strong>AUTORIZA</strong> a realização do serviço acima, condicionada ao cumprimento dos seguintes requisitos:</p>'+
+      '<div class="vp-checklist">'+itensCheck+'</div></div>'+
+      '<div class="vp-section"><div class="vp-section-title">3. Assinaturas</div>'+
+      '<div class="vp-sign-area">'+
+        '<div class="vp-sign-line"><div class="vp-sign-label">Síndico(a): '+d.sindico+'</div></div>'+
+        '<div class="vp-sign-line"><div class="vp-sign-label">Conselheiro(a) 1: ___________________</div></div>'+
+        '<div class="vp-sign-line"><div class="vp-sign-label">Conselheiro(a) 2: ___________________</div></div>'+
+        '<div class="vp-sign-line"><div class="vp-sign-label">Data: '+d.data+'</div></div>'+
+      '</div></div>';
+  } else if (tipo === 'laudo') {
+    corpo = '<div class="vp-section"><div class="vp-section-title">⚠ Template — preencher pela empresa contratada</div>'+
+      '<p class="vp-text"><strong>Empresa:</strong> ___________________________________ &nbsp; <strong>CNPJ:</strong> ___________________</p>'+
+      '<p class="vp-text"><strong>Responsável Técnico:</strong> ___________________________________ &nbsp; <strong>CREA/CAU:</strong> ___________</p></div>'+
+      '<div class="vp-section"><div class="vp-section-title">Descrição do Serviço</div>'+
+      '<div class="vp-highlight">'+d.acaoFormal+'</div>'+
+      '<p class="vp-text"><strong>Local:</strong> '+d.condo+' &nbsp;|&nbsp; <strong>Data prevista:</strong> '+d.data+'</p></div>'+
+      '<div class="vp-section"><div class="vp-section-title">Justificativa Técnica</div>'+
+      '<p class="vp-text">____________________________________________</p>'+
+      '<p class="vp-text">____________________________________________</p></div>'+
+      '<div class="vp-section"><div class="vp-section-title">Seguro de Responsabilidade Civil</div>'+
+      '<p class="vp-text"><strong>Apólice nº:</strong> _________________ &nbsp; <strong>Seguradora:</strong> _________________ &nbsp; <strong>Validade:</strong> ___/___/______</p>'+
+      '<div class="vp-sign-area"><div class="vp-sign-line"><div class="vp-sign-label">Assinatura e carimbo do Resp. Técnico</div></div><div class="vp-sign-line"><div class="vp-sign-label">Data: ___/___/______</div></div></div></div>';
+  } else if (tipo === 'comunicado') {
+    corpo = '<p class="vp-text">Prezados moradores do <strong>'+d.condo+'</strong>,</p>'+
+      '<p class="vp-text">Informamos que será realizado o seguinte serviço nas dependências do condomínio:</p>'+
+      '<div class="vp-highlight">'+d.acaoFormal+'</div>'+
+      '<p class="vp-text"><strong>Data prevista:</strong> '+d.data+' &nbsp;|&nbsp; <strong>Valor:</strong> R$ '+d.valor+'</p>'+
+      '<p class="vp-text">A empresa contratada apresentou documentação técnica e possui seguro de responsabilidade civil vigente, garantindo cobertura de eventuais danos.</p>'+
+      '<p class="vp-text">Durante a execução, poderá haver restrição temporária de acesso a determinadas áreas. Pedimos a compreensão e colaboração de todos.</p>'+
+      '<p class="vp-text">Para esclarecimentos, o(a) síndico(a) está disponível para contato.</p>'+
+      '<div class="vp-sign-area" style="margin-top:20px">'+
+        '<div class="vp-sign-line"><div class="vp-sign-label"><strong>'+d.sindico+'</strong><br>Síndico(a) — '+d.condo+'</div></div>'+
+        '<div class="vp-sign-line"><div class="vp-sign-label">Data: '+d.data+'</div></div>'+
+      '</div>';
+  } else if (tipo === 'seguro') {
+    var grupos = [
+      {titulo:'Documentação da Empresa', itens:['CNPJ ativo e regular na Receita Federal','Contrato social ou procuração do representante','Registro no CREA/CAU (se obra ou serviço técnico)','Certidão Negativa de Débitos Trabalhistas (CNDT)']},
+      {titulo:'Seguro de Responsabilidade Civil', itens:['Apólice vigente na data do serviço','Cobertura compatível com o valor: R$ '+d.valor,'Número da apólice e seguradora registrados','Contato da seguradora em caso de sinistro']},
+      {titulo:'Documentação Interna', itens:['Ata de deliberação do conselho assinada','Comunicado enviado com mín. 5 dias de antecedência','Contrato de prestação de serviços arquivado','Fotos do estado da área ANTES do serviço']},
+      {titulo:'Pós-serviço', itens:['Fotos do estado da área APÓS o serviço','Nota fiscal ou recibo arquivado','Termo de aceite assinado pelas duas partes']}
+    ];
+    corpo = grupos.map(function(g){
+      return '<div class="vp-section"><div class="vp-section-title">'+g.titulo+'</div><div class="vp-checklist">'+
+        g.itens.map(function(item){ return '<div class="vp-check"><div class="vp-check-box">☐</div><div>'+item+'</div></div>'; }).join('')+
+      '</div></div>';
+    }).join('');
+  }
+
+  return '<div class="vp-head">'+
+    '<span class="vp-logo">SYNDIKA</span><span class="vp-sep"></span>'+
+    '<span class="vp-meta">Escudo Jurídico IA · '+hoje()+'</span>'+
+    '</div>'+
+    '<div class="vp-stripe" style="background:'+corStripe[tipo]+'"></div>'+
+    '<div class="vp-body">'+
+      '<div class="vp-subtitle">'+info.label+'</div>'+
+      '<div class="vp-title">'+montarTituloDoc(tipo, d)+'</div>'+
+      '<div class="vp-info-row">'+
+        '<div class="vp-info-box"><div class="vp-info-label">Condomínio</div><div class="vp-info-val">'+d.condo+'</div></div>'+
+        '<div class="vp-info-box"><div class="vp-info-label">Síndico(a)</div><div class="vp-info-val">'+d.sindico+'</div></div>'+
+        '<div class="vp-info-box"><div class="vp-info-label">Data</div><div class="vp-info-val">'+d.data+'</div></div>'+
+        '<div class="vp-info-box"><div class="vp-info-label">Valor estimado</div><div class="vp-info-val">R$ '+d.valor+'</div></div>'+
+      '</div>'+
+      corpo+
+    '</div>'+
+    '<div class="vp-footer">'+
+      '<span class="vp-footer-text">Syndika Escudo Jurídico IA · Documento orientativo — não substitui consulta jurídica</span>'+
+      '<span class="vp-legal-badge">CC/02 · Lei 4.591/64</span>'+
+    '</div>';
+}
+
+// ── MODAL: Auto-detectar tipo ao digitar ─────────
+function modalAutoDetect() {
+  var desc = document.getElementById('modal-descricao');
+  if (!desc) return;
+  var detectado = detectarTipoPorTexto(desc.value);
+  var badge = document.getElementById('modal-autodetect-badge');
+  var texto = document.getElementById('modal-autodetect-texto');
+  var sel = document.getElementById('modal-tipo-select');
+  if (detectado && desc.value.trim().length > 5) {
+    if (sel) sel.value = detectado;
+    if (badge) badge.style.display = 'flex';
+    if (texto) texto.textContent = 'Tipo detectado: ' + TIPOS[detectado].label;
+  } else {
+    if (badge) badge.style.display = 'none';
+  }
+}
+
+// ── MODAL: Sincronizar badge quando select muda ──
+function modalSincTipo() {
+  var badge = document.getElementById('modal-autodetect-badge');
+  if (badge) badge.style.display = 'none';
+}
+
+// ── MODAL: Iniciar análise → transfere para form principal ──
+function iniciarAnaliseModal() {
+  var sel    = document.getElementById('modal-tipo-select');
+  var desc   = document.getElementById('modal-descricao');
+  var mData  = document.getElementById('modal-data');
+  var mValor = document.getElementById('modal-valor');
+
+  var tipoModal = sel ? sel.value : 'manutencao';
+  var descVal   = desc  ? desc.value.trim()  : '';
+  var dataVal   = mData ? mData.value        : '';
+  var valorVal  = mValor? mValor.value.trim(): '';
+
+  // 1. Transferir para campos do formulário principal
+  var mainDesc  = document.getElementById('acao-descricao');
+  var mainData  = document.getElementById('acao-data');
+  var mainValor = document.getElementById('acao-valor');
+  if (mainDesc  && descVal)  mainDesc.value  = descVal;
+  if (mainData  && dataVal)  mainData.value  = dataVal;
+  if (mainValor && valorVal) mainValor.value = valorVal;
+
+  // 2. Selecionar o botão de tipo correspondente
+  var mapa = { manutencao:0, obra:1, rh:2, advertencia:3, financeiro:4, outro:5 };
+  var btns = document.querySelectorAll('.at-btn');
+  btns.forEach(function(b){ b.classList.remove('selected'); });
+  var idx = mapa[tipoModal];
+  if (btns[idx]) btns[idx].classList.add('selected');
+
+  // 3. Fechar modal
+  closeModal('modal-nova-acao');
+
+  // 4. Navegar para a página do Escudo se necessário
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('active'); });
+  var pgEscudo = document.getElementById('page-escudo');
+  if (pgEscudo) pgEscudo.classList.add('active');
+  // Marca o primeiro nav-item (Escudo) como ativo
+  var navEscudo = document.querySelector('.nav-item');
+  if (navEscudo) {
+    document.querySelectorAll('.nav-item').forEach(function(n){ n.classList.remove('active'); });
+    navEscudo.classList.add('active');
+  }
+
+  // 5. Disparar análise de risco
+  setTimeout(function() {
+    var btnAnalisar = document.getElementById('btn-analisar-wrap');
+    if (btnAnalisar) btnAnalisar.style.display = 'block';
+    analisarRisco();
+    // Scroll para a seção de análise
+    var loading = document.getElementById('risk-analyzing');
+    if (loading) loading.scrollIntoView({ behavior:'smooth', block:'start' });
+  }, 120);
+}
+
+// (listener de acao-descricao consolidado no bloco de formalização abaixo)
+
+// ── CHECKLIST ────────────────────────────────────
+document.addEventListener('click', function(e) {
+  var item = e.target.closest('.check-item');
+  if (item && !e.target.closest('.check-req') && !e.target.closest('button')) {
+    item.classList.toggle('done');
+    var box = item.querySelector('.check-box');
+    if (box) box.textContent = item.classList.contains('done') ? '✓' : '';
+  }
+});
+
+// ── GERAÇÃO DE PDF ───────────────────────────────
+function baixarPDF(tipo) {
+  var d = getDados();
+  var dataFormatada = d.data || hoje();
+
+  // Verifica se jsPDF carregou
+  if (typeof window.jspdf === 'undefined' && typeof jsPDF === 'undefined') {
+    alert('Gerando documento... Por favor aguarde o carregamento completo da página e tente novamente.');
+    return;
+  }
+
+  var jsPDFLib = window.jspdf ? window.jspdf.jsPDF : jsPDF;
+  var doc = new jsPDFLib({ orientation:'portrait', unit:'mm', format:'a4' });
+
+  // Configurações visuais
+  var margem = 20;
+  var largura = 170;
+  var y = 20;
+
+  // ── Cabeçalho ──
+  doc.setFillColor(12, 15, 32);
+  doc.rect(0, 0, 210, 28, 'F');
+  doc.setTextColor(255, 255, 255);
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.text('SYNDIKA', margem, 12);
+  doc.setFontSize(7);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(150, 160, 200);
+  doc.text('Escudo Juridico IA  |  Documento gerado automaticamente', margem, 18);
+  doc.text('Gerado em: ' + hoje(), margem, 23);
+  y = 38;
+
+  // ── Conteúdo por tipo ──
+  if (tipo === 'ata') {
+    pdfAta(doc, d, margem, largura, y);
+  } else if (tipo === 'laudo') {
+    pdfLaudo(doc, d, margem, largura, y);
+  } else if (tipo === 'comunicado') {
+    pdfComunicado(doc, d, margem, largura, y);
+  } else if (tipo === 'seguro') {
+    pdfSeguro(doc, d, margem, largura, y);
+  }
+
+  // ── Rodapé ──
+  var totalPages = doc.internal.getNumberOfPages();
+  for (var i = 1; i <= totalPages; i++) {
+    doc.setPage(i);
+    doc.setDrawColor(30, 40, 70);
+    doc.line(margem, 282, 190, 282);
+    doc.setFontSize(7);
+    doc.setTextColor(120, 130, 160);
+    doc.setFont('helvetica', 'normal');
+    doc.text('Syndika — Escudo Juridico IA | Documento orientativo. Nao substitui consulta juridica.', margem, 287);
+    doc.text('Pagina ' + i + ' de ' + totalPages, 190, 287, { align:'right' });
+  }
+
+  var nomes = { ata:'Ata-Deliberacao', laudo:'Laudo-Tecnico-Template', comunicado:'Comunicado-Moradores', seguro:'Checklist-Seguro-RC' };
+  doc.save('Syndika_' + (nomes[tipo]||tipo) + '_' + new Date().toISOString().slice(0,10) + '.pdf');
+}
+
+// ── CONTEÚDO: ATA DE DELIBERAÇÃO ────────────────
+function pdfAta(doc, d, m, larg, y) {
+  var linhas;
+  doc.setDrawColor(79, 70, 229);
+  doc.setFillColor(79, 70, 229);
+  doc.rect(m, y-4, 4, 14, 'F');
+  doc.setFontSize(15);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(20, 25, 50);
+  doc.text('ATA DE DELIBERACAO DO CONSELHO CONSULTIVO', m+8, y+6);
+  y += 18;
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(80, 90, 110);
+  doc.text('Base legal: Art. 1.348 do Codigo Civil Brasileiro (Lei 10.406/2002)', m, y);
+  y += 5;
+  doc.text('Condominio: ' + d.condo + '  |  Sindico: ' + d.sindico, m, y);
+  y += 12;
+
+  doc.setDrawColor(220, 225, 240);
+  doc.line(m, y, m+larg, y);
+  y += 8;
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(20, 25, 50);
+  doc.text('1. IDENTIFICACAO', m, y);
+  y += 7;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(50, 60, 80);
+  linhas = doc.splitTextToSize('Reunidos em ' + hoje() + ', os membros do Conselho Consultivo do ' + d.condo + ', em reuniao ordinaria, deliberaram sobre a seguinte pauta:', larg);
+  doc.text(linhas, m, y);
+  y += linhas.length * 5 + 4;
+
+  doc.setFillColor(245, 246, 252);
+  doc.setDrawColor(200, 210, 235);
+  doc.roundedRect(m, y, larg, 16, 2, 2, 'FD');
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(79, 70, 229);
+  doc.text('PAUTA: ' + d.acaoFormal.toUpperCase(), m+4, y+7);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(80, 90, 110);
+  doc.text('Valor estimado: R$ ' + d.valor + '  |  Data prevista: ' + d.data, m+4, y+12);
+  y += 24;
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(20, 25, 50);
+  doc.text('2. DELIBERACAO', m, y);
+  y += 7;
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(50, 60, 80);
+  linhas = doc.splitTextToSize('O Conselho Consultivo, por maioria de votos, AUTORIZA a realizacao do servico descrito acima, desde que observadas as seguintes condicoes: (i) apresentacao de laudo tecnico pela empresa contratada; (ii) comprovacao de seguro de responsabilidade civil; (iii) comunicado previo aos moradores com antecedencia minima de 5 (cinco) dias.', larg);
+  doc.text(linhas, m, y);
+  y += linhas.length * 5 + 10;
+
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(20, 25, 50);
+  doc.text('3. ASSINATURAS', m, y);
+  y += 12;
+  var assinantes = [['Sindico(a)', d.sindico], ['Conselheiro(a) 1', '___________________________'], ['Conselheiro(a) 2', '___________________________']];
+  assinantes.forEach(function(a) {
+    doc.setDrawColor(180, 190, 210);
+    doc.line(m, y, m+70, y);
+    doc.setFontSize(8);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(100, 110, 130);
+    doc.text(a[0] + ': ' + a[1], m, y+5);
+    y += 16;
+  });
+}
+
+// ── CONTEÚDO: LAUDO TÉCNICO ──────────────────────
+function pdfLaudo(doc, d, m, larg, y) {
+  var linhas;
+  doc.setDrawColor(5, 150, 105);
+  doc.setFillColor(5, 150, 105);
+  doc.rect(m, y-4, 4, 14, 'F');
+  doc.setFontSize(15);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(20, 25, 50);
+  doc.text('LAUDO TECNICO DE NECESSIDADE', m+8, y+6);
+  y += 18;
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(80, 90, 110);
+  doc.text('Base legal: Art. 927 do CC — Responsabilidade civil do contratante', m, y);
+  y += 5;
+  doc.text('Condominio solicitante: ' + d.condo + '  |  Sindico: ' + d.sindico, m, y);
+  y += 12;
+
+  doc.setFillColor(255, 251, 235);
+  doc.setDrawColor(217, 119, 6);
+  doc.roundedRect(m, y, larg, 12, 2, 2, 'FD');
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(120, 70, 0);
+  doc.text('ATENCAO: Este template deve ser preenchido e assinado pela empresa contratada.', m+4, y+8);
+  y += 20;
+
+  var campos = [
+    ['IDENTIFICACAO DA EMPRESA',''],
+    ['Razao Social','_______________________________________________'],
+    ['CNPJ','___________________________  |  CREA/CAU: _____________'],
+    ['Responsavel Tecnico','_______________________________________________'],
+    ['',''],
+    ['DESCRICAO DO SERVICO',''],
+    ['Servico solicitado', d.acaoFormal],
+    ['Local de execucao', d.condo],
+    ['Data prevista de execucao', d.data],
+    ['',''],
+    ['JUSTIFICATIVA TECNICA',''],
+    ['Descricao','_______________________________________________'],
+    ['','_______________________________________________'],
+    ['','_______________________________________________'],
+    ['',''],
+    ['COBERTURA DE SEGURO',''],
+    ['Numero da Apolice RC','___________________________'],
+    ['Seguradora','___________________________  |  Validade: _____________'],
+  ];
+  campos.forEach(function(c) {
+    if (!c[0] && !c[1]) { y += 3; return; }
+    if (!c[1]) {
+      doc.setFontSize(10);
+      doc.setFont('helvetica', 'bold');
+      doc.setTextColor(20, 25, 50);
+      doc.text(c[0], m, y);
+      doc.setDrawColor(220, 225, 240);
+      doc.line(m, y+2, m+larg, y+2);
+      y += 8;
+    } else {
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(50, 60, 80);
+      doc.text(c[0] + ': ' + c[1], m, y);
+      y += 6;
+    }
+  });
+  y += 8;
+  doc.setDrawColor(180, 190, 210);
+  doc.line(m, y, m+80, y);
+  doc.setFontSize(8);
+  doc.setTextColor(100, 110, 130);
+  doc.text('Assinatura e carimbo do Responsavel Tecnico', m, y+5);
+  doc.text('Data: ___/___/______', m+100, y+5);
+}
+
+// ── CONTEÚDO: COMUNICADO AOS MORADORES ──────────
+function pdfComunicado(doc, d, m, larg, y) {
+  var linhas;
+  doc.setDrawColor(59, 130, 246);
+  doc.setFillColor(59, 130, 246);
+  doc.rect(m, y-4, 4, 14, 'F');
+  doc.setFontSize(15);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(20, 25, 50);
+  doc.text('COMUNICADO FORMAL AOS MORADORES', m+8, y+6);
+  y += 18;
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(80, 90, 110);
+  doc.text('Base legal: Art. 1.336 do CC  |  Prazo minimo: 5 dias de antecedencia', m, y);
+  y += 12;
+
+  doc.setFontSize(11);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(20, 25, 50);
+  doc.text('Prezados Moradores do ' + d.condo + ',', m, y);
+  y += 10;
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(50, 60, 80);
+  linhas = doc.splitTextToSize('Informamos que sera realizado o seguinte servico nas dependencias do condominio:', larg);
+  doc.text(linhas, m, y);
+  y += linhas.length * 5 + 6;
+
+  doc.setFillColor(245, 246, 252);
+  doc.setDrawColor(200, 210, 235);
+  doc.roundedRect(m, y, larg, 20, 2, 2, 'FD');
+  doc.setFontSize(10);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(79, 70, 229);
+  var linhasCom = doc.splitTextToSize('SERVICO: ' + d.acaoFormal, larg - 8);
+  doc.text(linhasCom, m+4, y+8);
+  doc.setFont('helvetica', 'normal');
+  doc.setFontSize(9);
+  doc.setTextColor(80, 90, 110);
+  doc.text('Data prevista: ' + d.data + '  |  Valor: R$ ' + d.valor, m+4, y+15);
+  y += 28;
+
+  var paragrafos = [
+    'Durante a execucao do servico, podera haver restricao temporaria de acesso a determinadas areas comuns. Pedimos a compreensao e colaboracao de todos.',
+    'A empresa contratada apresentou documentacao tecnica e possui seguro de responsabilidade civil vigente, garantindo a cobertura de eventuais danos.',
+    'Para esclarecimentos, o(a) sindico(a) ' + d.sindico + ' esta disponivel para contato.'
+  ];
+  paragrafos.forEach(function(p) {
+    linhas = doc.splitTextToSize(p, larg);
+    doc.setFontSize(9);
+    doc.setFont('helvetica', 'normal');
+    doc.setTextColor(50, 60, 80);
+    doc.text(linhas, m, y);
+    y += linhas.length * 5 + 5;
+  });
+
+  y += 6;
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(50, 60, 80);
+  doc.text('Atenciosamente,', m, y);
+  y += 7;
+  doc.setFont('helvetica', 'bold');
+  doc.text(d.sindico, m, y);
+  y += 5;
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(100, 110, 130);
+  doc.text('Sindico(a) — ' + d.condo, m, y);
+  y += 5;
+  doc.text(hoje(), m, y);
+  y += 14;
+  doc.setDrawColor(180, 190, 210);
+  doc.line(m, y, m+70, y);
+  doc.setFontSize(8);
+  doc.setTextColor(100, 110, 130);
+  doc.text('Assinatura do(a) Sindico(a)', m, y+5);
+}
+
+// ── CONTEÚDO: CHECKLIST DE SEGURO RC ────────────
+function pdfSeguro(doc, d, m, larg, y) {
+  var linhas;
+  doc.setDrawColor(220, 38, 38);
+  doc.setFillColor(220, 38, 38);
+  doc.rect(m, y-4, 4, 14, 'F');
+  doc.setFontSize(15);
+  doc.setFont('helvetica', 'bold');
+  doc.setTextColor(20, 25, 50);
+  doc.text('CHECKLIST DE RESPONSABILIDADE CIVIL', m+8, y+6);
+  y += 18;
+
+  doc.setFontSize(9);
+  doc.setFont('helvetica', 'normal');
+  doc.setTextColor(80, 90, 110);
+  doc.text('Condominio: ' + d.condo + '  |  Sindico responsavel: ' + d.sindico, m, y);
+  y += 5;
+  var linhasSeguro = doc.splitTextToSize('Servico: ' + d.acaoFormal + '  |  Data: ' + d.data, larg);
+  doc.text(linhasSeguro, m, y);
+  y += 12;
+
+  var itens = [
+    { cat: 'DOCUMENTACAO DA EMPRESA', itens: [
+      'CNPJ ativo e regular junto a Receita Federal',
+      'Contrato social ou procuracao do representante legal',
+      'Registro no CREA ou CAU (se obra ou servico tecnico)',
+      'Certidao Negativa de Debitos Trabalhistas (CNDT)',
+    ]},
+    { cat: 'SEGURO DE RESPONSABILIDADE CIVIL', itens: [
+      'Apolice de Seguro RC vigente na data do servico',
+      'Cobertura minima compativel com o valor do servico (R$ ' + d.valor + ')',
+      'Nome da seguradora e numero da apolice registrados',
+      'Contato da seguradora disponivel em caso de sinistro',
+    ]},
+    { cat: 'DOCUMENTACAO INTERNA DO CONDOMINIO', itens: [
+      'Ata de deliberacao do Conselho Consultivo assinada',
+      'Comunicado aos moradores enviado com min. 5 dias de antecedencia',
+      'Copia do contrato de prestacao de servicos arquivada',
+      'Registro fotografico do estado da area ANTES do inicio do servico',
+    ]},
+    { cat: 'POS-SERVICO', itens: [
+      'Registro fotografico do estado da area APOS o servico',
+      'Nota fiscal / recibo do servico arquivado',
+      'Termo de aceite ou vistoria assinado por ambas as partes',
+    ]},
+  ];
+
+  itens.forEach(function(secao) {
+    doc.setFontSize(10);
+    doc.setFont('helvetica', 'bold');
+    doc.setTextColor(20, 25, 50);
+    doc.text(secao.cat, m, y);
+    doc.setDrawColor(200, 210, 235);
+    doc.line(m, y+2, m+larg, y+2);
+    y += 9;
+    secao.itens.forEach(function(item) {
+      doc.setFillColor(240, 242, 255);
+      doc.setDrawColor(180, 190, 230);
+      doc.rect(m, y-4, 5, 5, 'FD');
+      doc.setFontSize(9);
+      doc.setFont('helvetica', 'normal');
+      doc.setTextColor(50, 60, 80);
+      linhas = doc.splitTextToSize(item, larg - 10);
+      doc.text(linhas, m+8, y);
+      y += linhas.length * 5 + 2;
+    });
+    y += 5;
+  });
+
+  y += 4;
+  doc.setFontSize(8);
+  doc.setFont('helvetica', 'italic');
+  doc.setTextColor(120, 130, 150);
+  linhas = doc.splitTextToSize('Este checklist foi gerado pelo Syndika Escudo Juridico com base no Codigo Civil (art. 927), na Lei 4.591/64 e nas boas praticas de gestao condominial. A verificacao destes itens nao elimina a responsabilidade do sindico, mas constitui evidencia de diligencia em caso de processo.', larg);
+  doc.text(linhas, m, y);
+}
+
+// visualizarDoc removido — substituído por abrirViewer (viewer in-page)
+
+// ── POLYFILL roundRect (compatibilidade) ─────────
+if (!CanvasRenderingContext2D.prototype.roundRect) {
+  CanvasRenderingContext2D.prototype.roundRect = function(x, y, w, h, r) {
+    if (w < 2*r) r = w/2;
+    if (h < 2*r) r = h/2;
+    this.beginPath();
+    this.moveTo(x+r, y);
+    this.arcTo(x+w, y, x+w, y+h, r);
+    this.arcTo(x+w, y+h, x, y+h, r);
+    this.arcTo(x, y+h, x, y, r);
+    this.arcTo(x, y, x+w, y, r);
+    this.closePath();
+    return this;
+  };
+}
+
+// ══════════════════════════════════════════════════
+//  CALENDÁRIO CUSTOMIZADO
+// ══════════════════════════════════════════════════
+var _calTarget = null;
+var _calYear, _calMonth;
+var _MESES_FULL = ['Janeiro','Fevereiro','Março','Abril','Maio','Junho','Julho','Agosto','Setembro','Outubro','Novembro','Dezembro'];
+var _MESES_ABREV = ['jan','fev','mar','abr','mai','jun','jul','ago','set','out','nov','dez'];
+var _DIAS = ['Dom','Seg','Ter','Qua','Qui','Sex','Sáb'];
+
+function openCalendar(inputId) {
+  _calTarget = inputId;
+  var now = new Date();
+  _calYear = now.getFullYear();
+  _calMonth = now.getMonth();
+  var inp = document.getElementById(inputId);
+  if (inp && inp.dataset.isoVal) {
+    var parts = inp.dataset.isoVal.split('-');
+    if (parts.length === 3) { _calYear = parseInt(parts[0]); _calMonth = parseInt(parts[1]) - 1; }
+  }
+  _renderCalendar();
+  var cal = document.getElementById('custom-calendar');
+  cal.style.display = 'block';
+  // Posiciona o calendário abaixo do input
+  var rect = inp.getBoundingClientRect();
+  var top = rect.bottom + 6;
+  var left = rect.left;
+  if (left + 268 > window.innerWidth - 8) left = window.innerWidth - 276;
+  if (top + 280 > window.innerHeight) top = rect.top - 286;
+  cal.style.top = top + 'px';
+  cal.style.left = left + 'px';
+}
+
+function _renderCalendar() {
+  var cal = document.getElementById('custom-calendar');
+  var today = new Date();
+  var firstDay = new Date(_calYear, _calMonth, 1).getDay();
+  var daysInMonth = new Date(_calYear, _calMonth + 1, 0).getDate();
+  var inp = _calTarget ? document.getElementById(_calTarget) : null;
+  var selVal = inp ? inp.dataset.isoVal : null;
+
+  var html = '<div class="cal-header">'+
+    '<button class="cal-nav" onclick="calNavMonth(-1)">‹</button>'+
+    '<span class="cal-title">'+_MESES_FULL[_calMonth]+' '+_calYear+'</span>'+
+    '<button class="cal-nav" onclick="calNavMonth(1)">›</button>'+
+    '</div>'+
+    '<div class="cal-grid">';
+
+  _DIAS.forEach(function(d){ html += '<div class="cal-day-name">'+d+'</div>'; });
+  // Células vazias antes do primeiro dia
+  for (var i = 0; i < firstDay; i++) html += '<div></div>';
+  // Dias do mês
+  for (var day = 1; day <= daysInMonth; day++) {
+    var iso = _calYear+'-'+String(_calMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+    var cls = 'cal-day';
+    if (day === today.getDate() && _calMonth === today.getMonth() && _calYear === today.getFullYear()) cls += ' cal-today';
+    if (selVal === iso) cls += ' cal-selected';
+    html += '<div class="'+cls+'" onclick="calSelectDay('+day+')">'+day+'</div>';
+  }
+  html += '</div>'+
+    '<div class="cal-sep"></div>'+
+    '<button class="cal-today-btn" onclick="calSelectToday()">Hoje</button>';
+  cal.innerHTML = html;
+}
+
+function calNavMonth(dir) {
+  _calMonth += dir;
+  if (_calMonth > 11) { _calMonth = 0; _calYear++; }
+  if (_calMonth < 0)  { _calMonth = 11; _calYear--; }
+  _renderCalendar();
+}
+
+function calSelectDay(day) {
+  var iso = _calYear+'-'+String(_calMonth+1).padStart(2,'0')+'-'+String(day).padStart(2,'0');
+  var formatado = day+' de '+_MESES_FULL[_calMonth]+' de '+_calYear;
+  var inp = document.getElementById(_calTarget);
+  if (inp) { inp.value = formatado; inp.dataset.isoVal = iso; }
+  document.getElementById('custom-calendar').style.display = 'none';
+}
+
+function calSelectToday() {
+  var t = new Date();
+  _calYear = t.getFullYear(); _calMonth = t.getMonth();
+  calSelectDay(t.getDate());
+}
+
+// Fecha ao clicar fora
+document.addEventListener('click', function(e) {
+  var cal = document.getElementById('custom-calendar');
+  if (!cal) return;
+  if (cal.style.display === 'none') return;
+  if (cal.contains(e.target)) return;
+  if (e.target.closest && e.target.closest('.date-field-wrap')) return;
+  cal.style.display = 'none';
+}, true);
+
+// ══════════════════════════════════════════════════
+//  FORMALIZAÇÃO DE TEXTO
+// ══════════════════════════════════════════════════
+function formalizarTexto(texto, tipo) {
+  if (!texto || texto.trim().length < 6) return texto;
+  var t = texto.trim();
+
+  // Remove marcadores informais de intenção no início
+  t = t.replace(/^(quero |vou |preciso |precisamos |iremos |vamos |pensamos em |estou querendo |estamos querendo )/i, '');
+  // Correções de linguagem informal
+  t = t.replace(/\bpra\b/gi,'para').replace(/\btá\b/gi,'está').replace(/\bpq\b/gi,'porque');
+  t = t.replace(/\btbm\b/gi,'também').replace(/\bq\b/g,'que').replace(/\bvc\b/gi,'você');
+  t = t.replace(/\bmt\b/gi,'muito').replace(/\bmsm\b/gi,'mesmo').replace(/\bss\b/gi,'sim');
+  // Capitaliza primeira letra
+  t = t.charAt(0).toUpperCase() + t.slice(1);
+  // Garante ponto final
+  if (!/[.!?]$/.test(t)) t += '.';
+
+  var prefixos = {
+    manutencao: 'Contratação de empresa especializada para a execução de serviço de manutenção condominial: ',
+    obra:       'Execução de obra ou reforma em área condominial, a saber: ',
+    rh:         'Rescisão ou alteração de contrato de trabalho de funcionário condominial, referente a: ',
+    advertencia:'Emissão de notificação formal ao condômino, em razão de: ',
+    financeiro: 'Deliberação de ordem financeira condominial concernente a: ',
+    outro:      'Prática de ato administrativo condominial relativo a: '
+  };
+  var sufixos = {
+    manutencao: ' Ação condicionada à apresentação de laudo técnico e comprovação de cobertura securitária.',
+    obra:       ' Requer aprovação em Assembleia Geral e apresentação de ART/RRT do responsável técnico.',
+    rh:         ' A ser conduzida em estrita observância às disposições da Consolidação das Leis do Trabalho.',
+    advertencia:' Assegurado ao notificado o exercício do contraditório e da ampla defesa.',
+    financeiro: ' Em conformidade com o orçamento aprovado em Assembleia Geral Ordinária.',
+    outro:      ' Devidamente registrada nos livros de atas e arquivos condominiais.'
+  };
+
+  var jaFormal = /^(contrata|execu|rescis|notifica|delibera|emissão|prática|realiza)/i.test(t);
+  var pref = prefixos[tipo] || prefixos.outro;
+  var suf  = sufixos[tipo]  || sufixos.outro;
+
+  if (!jaFormal) {
+    t = pref + t.charAt(0).toLowerCase() + t.slice(1);
+  }
+  // Adiciona sufixo legal se não terminar com ele
+  if (!t.includes(suf.trim().substring(0,15))) t = t.replace(/\.$/,'') + suf;
+
+  return t;
+}
+
+// ── Atualiza preview de formalização ao digitar ──
+(function(){
+  var timer = null;
+  document.addEventListener('input', function(e) {
+    if (e.target && e.target.id === 'acao-descricao') {
+      clearTimeout(timer);
+      timer = setTimeout(function(){
+        sincronizarBotaoComTexto();
+        var val = e.target.value.trim();
+        var badge = document.getElementById('formal-preview-badge');
+        var texto = document.getElementById('formal-preview-texto');
+        if (val.length > 10 && badge && texto) {
+          var tipo = getTipoSelecionado();
+          texto.textContent = formalizarTexto(val, tipo);
+          badge.classList.add('visible');
+        } else if (badge) {
+          badge.classList.remove('visible');
+        }
+      }, 700);
+    }
+  });
+})();
+
+</script>
+<!-- Calendário flutuante -->
+<div id="custom-calendar"></div>
+</body>
+</html>

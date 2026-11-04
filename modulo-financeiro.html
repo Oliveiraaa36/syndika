@@ -1,0 +1,1266 @@
+<!DOCTYPE html>
+<html lang="pt-BR">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>SíndicoFácil — Saúde Financeira</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --ink:#060C18;--navy:#0B2545;--navy2:#163E6B;
+  --blue:#2563EB;--blue-mid:#1E40AF;--blue-light:#60A5FA;
+  --gold:#F59E0B;--gold-light:#FCD34D;
+  --bg:#F8FAFC;--surface:#FFFFFF;--surface2:#F1F5F9;
+  --border:#E2E8F0;--border2:#CBD5E1;
+  --text:#0F172A;--text2:#334155;--muted:#64748B;--muted2:#94A3B8;
+  --green:#059669;--green2:#10B981;--green-bg:#ECFDF5;--green-border:#A7F3D0;
+  --yellow:#D97706;--yellow-bg:#FFFBEB;--yellow-border:#FDE68A;
+  --red:#DC2626;--red-bg:#FEF2F2;--red-border:#FECACA;
+  --r:12px;--r-lg:18px;--r-xl:24px;
+}
+body{font-family:'Inter',-apple-system,sans-serif;background:var(--bg);color:var(--text);min-height:100vh;-webkit-font-smoothing:antialiased}
+.screen{display:none}.screen.active{display:block}
+.max{max-width:600px;margin:0 auto}
+
+/* ══ HERO ══ */
+#hero-fin{background:var(--ink);position:relative;overflow:hidden}
+.hf-glow1{position:absolute;top:-100px;right:-80px;width:420px;height:420px;border-radius:50%;background:radial-gradient(circle,rgba(5,150,105,0.18) 0%,transparent 65%);pointer-events:none}
+.hf-glow2{position:absolute;bottom:-80px;left:-60px;width:360px;height:360px;border-radius:50%;background:radial-gradient(circle,rgba(245,158,11,0.12) 0%,transparent 65%);pointer-events:none}
+.hf-grid{position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,0.03) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,0.03) 1px,transparent 1px);background-size:40px 40px;pointer-events:none}
+.hf-inner{position:relative;z-index:2;padding:44px 22px 0;text-align:center;max-width:600px;margin:0 auto}
+.brand-row{display:flex;align-items:center;justify-content:center;gap:10px;margin-bottom:26px}
+.brand-icon{width:44px;height:44px;background:linear-gradient(135deg,#F59E0B,#FBBF24);border-radius:12px;display:flex;align-items:center;justify-content:center;font-size:20px;box-shadow:0 0 24px rgba(245,158,11,0.4)}
+.brand-name{font-size:28px;font-weight:900;color:#fff;letter-spacing:-.6px}
+.brand-name em{color:var(--gold);font-style:normal}
+.hero-badge{display:inline-flex;align-items:center;gap:7px;background:rgba(5,150,105,0.12);border:1px solid rgba(5,150,105,0.28);color:#6EE7B7;font-size:12px;font-weight:700;padding:6px 16px;border-radius:30px;letter-spacing:.3px;margin-bottom:18px}
+.badge-dot{width:6px;height:6px;background:#10B981;border-radius:50%;animation:pulse 2s ease-in-out infinite}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(1.4)}}
+.hero-h1{font-size:clamp(30px,7.5vw,46px);font-weight:900;color:#fff;line-height:1.12;letter-spacing:-1.5px;margin-bottom:14px}
+.hero-h1 mark{background:linear-gradient(90deg,#10B981,#34D399);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text}
+.hero-p{font-size:15px;color:rgba(255,255,255,0.48);line-height:1.65;margin-bottom:26px;max-width:380px;margin-left:auto;margin-right:auto}
+.hero-chips{display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin-bottom:36px}
+.hero-chip{display:flex;align-items:center;gap:6px;background:rgba(255,255,255,0.06);border:1px solid rgba(255,255,255,0.10);color:rgba(255,255,255,0.75);font-size:12px;font-weight:600;padding:7px 14px;border-radius:30px}
+.chip-ok{font-size:12px;color:var(--gold)}
+.stats-bar{display:grid;grid-template-columns:repeat(3,1fr);border-top:1px solid rgba(255,255,255,0.07)}
+.stat-item{padding:16px 10px;text-align:center;position:relative}
+.stat-item+.stat-item::before{content:'';position:absolute;left:0;top:20%;bottom:20%;width:1px;background:rgba(255,255,255,0.07)}
+.stat-num{font-size:22px;font-weight:900;color:#fff;display:block;letter-spacing:-.4px;line-height:1.1}
+.stat-label{font-size:10px;color:rgba(255,255,255,0.38);margin-top:4px;display:block;font-weight:500}
+
+/* ══ HOME CARD ══ */
+.home-wrap{padding:24px 16px 40px}
+.module-card{width:100%;background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:22px 18px;margin-bottom:12px;cursor:pointer;text-align:left;display:flex;align-items:center;gap:16px;box-shadow:0 1px 3px rgba(0,0,0,.05),0 4px 14px rgba(0,0,0,.04);transition:transform .22s,box-shadow .22s,border-color .22s;position:relative;overflow:hidden}
+.module-card:hover{transform:translateY(-2px);box-shadow:0 8px 32px rgba(11,37,69,.10);border-color:rgba(5,150,105,.3)}
+.mod-icon-green2{background:linear-gradient(145deg,#065F46,#059669)}
+.mod-icon{width:58px;height:58px;border-radius:17px;display:flex;align-items:center;justify-content:center;font-size:26px;flex-shrink:0;box-shadow:0 4px 14px rgba(0,0,0,.18)}
+.mod-text{flex:1}.mod-title{font-size:17px;font-weight:800;color:var(--text);margin-bottom:5px;letter-spacing:-.3px}
+.mod-desc{font-size:13px;color:var(--muted);line-height:1.45}
+.mod-arrow{width:34px;height:34px;border-radius:50%;background:var(--surface2);border:1.5px solid var(--border);display:flex;align-items:center;justify-content:center;flex-shrink:0;transition:all .22s;font-size:15px;color:var(--muted2);font-weight:700}
+.module-card:hover .mod-arrow{background:var(--green);border-color:var(--green);color:#fff}
+.insight-banner{background:linear-gradient(135deg,#064E3B,#065F46,#047857);border-radius:var(--r-xl);padding:20px 18px;margin-bottom:12px;position:relative;overflow:hidden}
+.insight-banner::before{content:'';position:absolute;top:-60px;right:-40px;width:180px;height:180px;border-radius:50%;background:rgba(16,185,129,.12);pointer-events:none}
+.insight-title{font-size:13px;font-weight:800;color:#6EE7B7;letter-spacing:.5px;text-transform:uppercase;margin-bottom:6px;position:relative;z-index:1}
+.insight-text{font-size:14px;color:rgba(255,255,255,.82);line-height:1.55;position:relative;z-index:1}
+.insight-text strong{color:#fff}
+
+/* ══ SCREEN NAV ══ */
+.screen-nav{background:rgba(255,255,255,.96);backdrop-filter:blur(12px);border-bottom:1px solid var(--border);padding:11px 16px;display:flex;align-items:center;gap:12px;position:sticky;top:0;z-index:20}
+.nav-back{display:flex;align-items:center;gap:5px;background:var(--surface2);border:1.5px solid var(--border);color:var(--text2);font-size:13px;font-weight:700;padding:8px 14px;border-radius:30px;cursor:pointer;font-family:inherit;transition:all .18s;flex-shrink:0}
+.nav-back:hover{background:var(--border)}
+.nav-title{font-size:15px;font-weight:800;color:var(--text);flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+.nav-step{font-size:11px;font-weight:700;color:var(--green);background:var(--green-bg);border:1px solid var(--green-border);padding:4px 10px;border-radius:20px;flex-shrink:0}
+
+/* ══ FORM HERO ══ */
+.form-hero{background:linear-gradient(160deg,#060C18 0%,#064E3B 55%,#065F46 100%);padding:30px 20px 50px;position:relative;overflow:hidden}
+.form-hero::before{content:'';position:absolute;top:-80px;right:-60px;width:240px;height:240px;border-radius:50%;background:radial-gradient(circle,rgba(16,185,129,.10),transparent 65%)}
+.form-hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:28px;background:var(--bg);border-radius:28px 28px 0 0}
+.fh-eyebrow{font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:8px;position:relative;z-index:1}
+.fh-title{font-size:28px;font-weight:900;color:#fff;margin-bottom:6px;letter-spacing:-.7px;position:relative;z-index:1;line-height:1.1}
+.fh-sub{font-size:13px;color:rgba(255,255,255,.42);line-height:1.55;position:relative;z-index:1}
+
+/* ══ FORM ══ */
+.form-wrap{padding:0 16px 28px}
+.form-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:24px 20px;margin-top:-14px;box-shadow:0 12px 48px rgba(0,0,0,.10),0 2px 8px rgba(0,0,0,.05)}
+.form-group{margin-bottom:16px}
+label{display:block;font-size:13px;font-weight:600;color:var(--text2);margin-bottom:7px}
+input[type=text],input[type=number],select{width:100%;padding:13px 15px;border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-family:inherit;color:var(--text);background:#FAFBFD;transition:all .18s;-webkit-appearance:none;outline:none}
+input:focus,select:focus{border-color:var(--green);background:#fff;box-shadow:0 0 0 4px rgba(5,150,105,.08)}
+.form-divider{height:1px;background:var(--border);margin:22px 0}
+.form-section-head{font-size:14px;font-weight:800;color:var(--text);letter-spacing:-.2px;margin-bottom:16px;display:flex;align-items:center;gap:10px}
+.form-section-num{width:22px;height:22px;background:var(--green);color:#fff;border-radius:7px;display:flex;align-items:center;justify-content:center;font-size:11px;font-weight:800;flex-shrink:0}
+.form-section-head::after{content:'';flex:1;height:1px;background:var(--border)}
+.input-prefix{position:relative}
+.input-prefix::before{content:'R$';position:absolute;left:14px;top:50%;transform:translateY(-50%);font-size:14px;font-weight:600;color:var(--muted);z-index:1;pointer-events:none}
+.input-prefix input{padding-left:42px}
+.cat-grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}
+.cat-item{background:#FAFBFD;border:1.5px solid var(--border);border-radius:14px;padding:14px}
+.cat-label{font-size:12px;font-weight:700;color:var(--text2);margin-bottom:8px;display:flex;align-items:center;gap:6px}
+.cat-emoji{font-size:16px}
+.cat-input{position:relative}
+.cat-input::before{content:'R$';position:absolute;left:10px;top:50%;transform:translateY(-50%);font-size:12px;font-weight:600;color:var(--muted);z-index:1;pointer-events:none}
+.cat-input input{padding:9px 10px 9px 32px;font-size:14px;border-radius:9px}
+.size-pills{display:flex;gap:8px;flex-wrap:wrap}
+.size-pill{padding:8px 16px;background:var(--surface2);border:1.5px solid var(--border);border-radius:30px;font-size:13px;font-weight:600;color:var(--muted);cursor:pointer;font-family:inherit;transition:all .18s}
+.size-pill.active{background:var(--green);border-color:var(--green);color:#fff}
+.btn-generate{width:100%;padding:17px;background:linear-gradient(135deg,#065F46 0%,#059669 55%,#10B981 100%);color:#fff;border:none;border-radius:16px;font-size:17px;font-weight:800;cursor:pointer;font-family:inherit;letter-spacing:.3px;box-shadow:0 4px 16px rgba(5,150,105,.32),0 1px 3px rgba(0,0,0,.14);transition:all .2s;position:relative;overflow:hidden}
+.btn-generate:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(5,150,105,.42)}
+.btn-generate:active{transform:translateY(0)}
+
+/* ══ DASHBOARD ══ */
+.dash-hero{background:linear-gradient(145deg,#060C18,#064E3B,#065F46);padding:32px 20px 52px;position:relative;overflow:hidden;text-align:center}
+.dash-hero::after{content:'';position:absolute;bottom:-1px;left:0;right:0;height:28px;background:var(--bg);border-radius:28px 28px 0 0}
+.dash-hero::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:36px 36px}
+.score-wrap{position:relative;z-index:1;margin-bottom:20px}
+.score-label-top{font-size:11px;font-weight:700;letter-spacing:2px;color:rgba(255,255,255,.4);text-transform:uppercase;margin-bottom:10px}
+canvas#score-gauge{display:block;margin:0 auto}
+.score-number{font-size:52px;font-weight:900;color:#fff;letter-spacing:-2px;line-height:1;margin-top:-8px}
+.score-verdict{font-size:15px;font-weight:700;margin-top:4px;padding:6px 18px;border-radius:30px;display:inline-block}
+.verdict-otimo{background:rgba(5,150,105,.18);color:#6EE7B7;border:1px solid rgba(16,185,129,.3)}
+.verdict-bom{background:rgba(16,185,129,.14);color:#A7F3D0;border:1px solid rgba(16,185,129,.22)}
+.verdict-atencao{background:rgba(245,158,11,.14);color:#FCD34D;border:1px solid rgba(245,158,11,.28)}
+.verdict-critico{background:rgba(220,38,38,.14);color:#FCA5A5;border:1px solid rgba(220,38,38,.28)}
+
+.kpi-row{display:grid;grid-template-columns:1fr 1fr;gap:10px;padding:0 16px 16px;margin-top:-14px;position:relative;z-index:2}
+.kpi-card{background:var(--surface);border:1.5px solid var(--border);border-radius:16px;padding:14px;box-shadow:0 2px 12px rgba(0,0,0,.06)}
+.kpi-label{font-size:11px;font-weight:700;color:var(--muted);text-transform:uppercase;letter-spacing:.8px;margin-bottom:5px}
+.kpi-value{font-size:22px;font-weight:900;color:var(--text);letter-spacing:-.5px;line-height:1.1}
+.kpi-sub{font-size:11px;color:var(--muted2);margin-top:3px}
+.kpi-green{color:var(--green)}
+.kpi-red{color:var(--red)}
+.kpi-gold{color:var(--yellow)}
+
+.dash-body{padding:0 16px 36px}
+.section-head{font-size:11px;font-weight:700;letter-spacing:2px;color:var(--muted);text-transform:uppercase;padding:20px 0 12px}
+
+/* ══ BENCHMARK BARS ══ */
+.bench-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:20px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.bench-row{margin-bottom:18px}
+.bench-row:last-child{margin-bottom:0}
+.bench-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.bench-name{font-size:13px;font-weight:700;color:var(--text)}
+.bench-amounts{font-size:12px;color:var(--muted);display:flex;align-items:center;gap:6px}
+.bench-current{font-size:13px;font-weight:800;color:var(--text)}
+.bench-badge{font-size:10px;font-weight:700;padding:2px 8px;border-radius:10px}
+.badge-ok{background:var(--green-bg);color:#065F46;border:1px solid var(--green-border)}
+.badge-warn{background:var(--yellow-bg);color:#92400E;border:1px solid var(--yellow-border)}
+.badge-over{background:var(--red-bg);color:#991B1B;border:1px solid var(--red-border)}
+.bench-bar-bg{height:8px;background:var(--surface2);border-radius:10px;overflow:hidden;position:relative}
+.bench-bar-fill{height:100%;border-radius:10px;transition:width .6s cubic-bezier(.4,0,.2,1)}
+.bar-ok{background:linear-gradient(90deg,#10B981,#059669)}
+.bar-warn{background:linear-gradient(90deg,#FBBF24,#D97706)}
+.bar-over{background:linear-gradient(90deg,#F87171,#DC2626)}
+.bench-avg-marker{position:absolute;top:-2px;height:12px;width:2px;background:var(--muted2);border-radius:2px}
+.bench-avg-label{position:absolute;top:14px;font-size:9px;color:var(--muted2);transform:translateX(-50%);white-space:nowrap}
+
+/* ══ SIMULATOR ══ */
+.sim-card{background:var(--surface);border:2px solid var(--green-border);border-radius:var(--r-xl);padding:22px 20px;margin-bottom:12px;box-shadow:0 4px 20px rgba(5,150,105,.08)}
+.sim-header{display:flex;align-items:center;gap:12px;margin-bottom:18px}
+.sim-icon{width:46px;height:46px;background:linear-gradient(135deg,#065F46,#10B981);border-radius:14px;display:flex;align-items:center;justify-content:center;font-size:22px;flex-shrink:0;box-shadow:0 4px 12px rgba(5,150,105,.28)}
+.sim-title{font-size:16px;font-weight:800;color:var(--text)}
+.sim-sub{font-size:12px;color:var(--muted);margin-top:2px}
+.sim-result{background:linear-gradient(135deg,#064E3B,#065F46);border-radius:16px;padding:18px;margin-bottom:18px;text-align:center}
+.sim-result-row{display:flex;justify-content:space-around;align-items:center}
+.sim-metric{text-align:center}
+.sim-metric-val{font-size:26px;font-weight:900;color:#fff;letter-spacing:-.8px;display:block}
+.sim-metric-val.green{color:#6EE7B7}
+.sim-metric-label{font-size:11px;color:rgba(255,255,255,.5);font-weight:600;margin-top:2px;display:block}
+.sim-divider{width:1px;height:48px;background:rgba(255,255,255,.12)}
+.sim-savings-banner{background:var(--green-bg);border:1.5px solid var(--green-border);border-radius:12px;padding:12px 14px;margin-bottom:18px;display:flex;align-items:center;gap:12px}
+.sim-savings-icon{font-size:28px;flex-shrink:0}
+.sim-savings-text{flex:1}
+.sim-savings-val{font-size:18px;font-weight:900;color:var(--green);display:block;letter-spacing:-.4px}
+.sim-savings-sub{font-size:12px;color:#065F46;margin-top:2px}
+.slider-row{margin-bottom:14px}
+.slider-top{display:flex;justify-content:space-between;align-items:baseline;margin-bottom:8px}
+.slider-name{font-size:13px;font-weight:600;color:var(--text2)}
+.slider-vals{display:flex;align-items:center;gap:8px;font-size:13px}
+.slider-orig{color:var(--muted);text-decoration:line-through;font-size:11px}
+.slider-curr{font-weight:800;color:var(--text)}
+input[type=range]{width:100%;-webkit-appearance:none;appearance:none;height:6px;border-radius:10px;background:var(--surface2);outline:none;border:none;cursor:pointer;margin:0;padding:0}
+input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;appearance:none;width:22px;height:22px;border-radius:50%;background:var(--green);cursor:pointer;box-shadow:0 2px 8px rgba(5,150,105,.4);border:2px solid #fff;transition:transform .15s}
+input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.15)}
+input[type=range]::-moz-range-thumb{width:22px;height:22px;border-radius:50%;background:var(--green);cursor:pointer;box-shadow:0 2px 8px rgba(5,150,105,.4);border:2px solid #fff}
+.slider-range-labels{display:flex;justify-content:space-between;font-size:10px;color:var(--muted2);margin-top:4px}
+
+/* ══ ACTION PLAN ══ */
+.plan-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:20px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.plan-item{display:flex;gap:14px;margin-bottom:16px;padding-bottom:16px;border-bottom:1px solid var(--border)}
+.plan-item:last-child{margin-bottom:0;padding-bottom:0;border-bottom:none}
+.plan-num{width:32px;height:32px;border-radius:10px;display:flex;align-items:center;justify-content:center;font-size:14px;font-weight:900;flex-shrink:0;color:#fff}
+.plan-num-1{background:linear-gradient(135deg,#065F46,#059669)}
+.plan-num-2{background:linear-gradient(135deg,#1E40AF,#2563EB)}
+.plan-num-3{background:linear-gradient(135deg,#4C1D95,#7C3AED)}
+.plan-text{flex:1}
+.plan-title{font-size:13px;font-weight:800;color:var(--text);margin-bottom:4px}
+.plan-desc{font-size:12px;color:var(--muted);line-height:1.5}
+.plan-saving{font-size:12px;font-weight:700;color:var(--green);margin-top:4px}
+
+/* ══ CHART ══ */
+.chart-card{background:var(--surface);border:1.5px solid var(--border);border-radius:var(--r-xl);padding:20px;margin-bottom:12px;box-shadow:0 2px 12px rgba(0,0,0,.05)}
+.chart-title{font-size:14px;font-weight:800;color:var(--text);margin-bottom:16px}
+.chart-container{display:flex;align-items:center;gap:16px}
+.chart-legend{flex:1}
+.legend-item{display:flex;align-items:center;gap:8px;margin-bottom:8px}
+.legend-dot{width:10px;height:10px;border-radius:3px;flex-shrink:0}
+.legend-text{font-size:12px;color:var(--text2);flex:1}
+.legend-pct{font-size:12px;font-weight:700;color:var(--text)}
+
+/* ══ REPORT OUTPUT ══ */
+.report-success{background:linear-gradient(145deg,#060C18,#064E3B,#065F46);padding:36px 20px 32px;text-align:center;position:relative;overflow:hidden}
+.report-success::before{content:'';position:absolute;inset:0;background-image:linear-gradient(rgba(255,255,255,.025) 1px,transparent 1px),linear-gradient(90deg,rgba(255,255,255,.025) 1px,transparent 1px);background-size:36px 36px}
+.success-ring{width:58px;height:58px;background:var(--green);border-radius:50%;display:flex;align-items:center;justify-content:center;margin:0 auto 16px;font-size:24px;box-shadow:0 0 0 10px rgba(5,150,105,.13),0 0 0 20px rgba(5,150,105,.06);position:relative;z-index:1;animation:popIn .5s cubic-bezier(.34,1.56,.64,1) both}
+@keyframes popIn{from{transform:scale(.5);opacity:0}to{transform:scale(1);opacity:1}}
+.success-title{font-size:22px;font-weight:900;color:#fff;position:relative;z-index:1;letter-spacing:-.4px}
+.success-sub{font-size:13px;color:rgba(255,255,255,.45);position:relative;z-index:1;margin-top:4px}
+.report-body{padding:0 16px 36px}
+.output-content{background:var(--surface);border-radius:16px;padding:24px;margin:14px 0;white-space:pre-wrap;font-size:13.5px;line-height:1.85;color:var(--text);font-family:'Georgia',serif;border:1.5px solid var(--border);box-shadow:0 2px 14px rgba(0,0,0,.05);max-height:420px;overflow-y:auto}
+.copy-btn{width:100%;padding:14px;background:var(--green-bg);color:#065F46;border:2px solid var(--green-border);border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:10px;font-family:inherit;transition:all .2s}
+.copy-btn:hover{background:#D1FAE5}
+.copy-btn.copied{background:var(--green);color:#fff;border-color:var(--green)}
+.btn-secondary{width:100%;padding:13px;background:var(--surface);color:var(--text2);border:1.5px solid var(--border);border-radius:12px;font-size:15px;font-weight:700;cursor:pointer;font-family:inherit;transition:all .2s;margin-bottom:10px}
+.btn-secondary:hover{background:var(--surface2)}
+.btn-download{width:100%;padding:14px;background:linear-gradient(135deg,#065F46,#059669);color:#fff;border:none;border-radius:12px;font-size:15px;font-weight:800;cursor:pointer;margin-bottom:10px;font-family:inherit;box-shadow:0 4px 14px rgba(5,150,105,.28);transition:all .2s}
+.btn-download:hover{transform:translateY(-1px);box-shadow:0 8px 22px rgba(5,150,105,.36)}
+
+/* ══ MISC ══ */
+.footer-text{text-align:center;font-size:12px;color:var(--muted2);padding:16px 0 4px}
+.autofill-hint{display:inline-flex;align-items:center;gap:5px;font-size:11px;color:var(--green);font-weight:600;background:var(--green-bg);border:1px solid var(--green-border);padding:4px 10px;border-radius:20px;margin-bottom:10px}
+</style>
+</head>
+<body>
+
+<div class="max">
+
+<!-- ══ HERO ══ -->
+<div id="hero-fin">
+  <div class="hf-glow1"></div><div class="hf-glow2"></div><div class="hf-grid"></div>
+  <div class="hf-inner">
+    <div class="brand-row">
+      <div class="brand-icon">🏢</div>
+      <div class="brand-name">Síndico<em>Fácil</em></div>
+    </div>
+    <div class="hero-badge"><span class="badge-dot"></span>Novo módulo — Exclusivo Vortiq</div>
+    <h1 class="hero-h1">Saúde financeira do seu cond. em <mark>30 segundos.</mark></h1>
+    <p class="hero-p">Descubra onde o dinheiro vai, compare com outros condomínios e simule a cota ideal — sem planilha, sem contador.</p>
+    <div class="hero-chips">
+      <span class="hero-chip"><span class="chip-ok">✓</span> Score financeiro</span>
+      <span class="hero-chip"><span class="chip-ok">✓</span> Benchmark real</span>
+      <span class="hero-chip"><span class="chip-ok">✓</span> Simulador de cota</span>
+    </div>
+  </div>
+  <div class="stats-bar">
+    <div class="stat-item"><span class="stat-num">8</span><span class="stat-label">categorias analisadas</span></div>
+    <div class="stat-item"><span class="stat-num">R$0</span><span class="stat-label">Custo para usar</span></div>
+    <div class="stat-item"><span class="stat-num">30s</span><span class="stat-label">Para ver o diagnóstico</span></div>
+  </div>
+</div>
+
+<!-- ══ HOME ══ -->
+<div id="home" class="screen active">
+  <div class="home-wrap">
+    <div class="insight-banner">
+      <div class="insight-title">💡 Você sabia?</div>
+      <div class="insight-text">O condomínio brasileiro médio gasta <strong>23% acima do necessário</strong> em contratos de terceiros. Com o Simulador de Saúde Financeira, você descobre exatamente onde está o desperdício — e gera um plano de ação em 1 clique.</div>
+    </div>
+    <button class="module-card" onclick="showScreen('form')">
+      <div class="mod-icon mod-icon-green2">📊</div>
+      <div class="mod-text">
+        <div class="mod-title">Diagnóstico Financeiro</div>
+        <div class="mod-desc">Score de saúde, benchmark por categoria e simulador de impacto na cota</div>
+      </div>
+      <div class="mod-arrow">›</div>
+    </button>
+    <div class="footer-text">SíndicoFácil · Módulo Financeiro — by Vortiq</div>
+  </div>
+</div>
+
+<!-- ══ FORM ══ -->
+<div id="form" class="screen">
+  <div class="screen-nav">
+    <button class="nav-back" onclick="showScreen('home')">← Voltar</button>
+    <span class="nav-title">Diagnóstico Financeiro</span>
+    <span class="nav-step">Passo 1 de 2</span>
+  </div>
+  <div class="form-hero">
+    <div class="fh-eyebrow">Módulo financeiro</div>
+    <div class="fh-title">Diagnóstico do Condomínio</div>
+    <div class="fh-sub">Preencha os dados de despesas — o diagnóstico é gerado na hora</div>
+  </div>
+  <div class="form-wrap">
+    <div class="form-card">
+      <!-- IDENTIFICAÇÃO -->
+      <div class="form-section-head"><span class="form-section-num">1</span>Identificação</div>
+      <div id="autofill-hint-fin" style="display:none"><span class="autofill-hint">⚡ Dados preenchidos automaticamente</span></div>
+      <div class="form-group">
+        <label>Nome do condomínio</label>
+        <input type="text" id="fin-condo" placeholder="Ex: Residencial das Palmeiras">
+      </div>
+      <div class="form-group">
+        <label>Seu nome (síndico/a)</label>
+        <input type="text" id="fin-sindico" placeholder="Ex: Carlos Alberto Silva">
+      </div>
+      <div class="form-divider"></div>
+      <!-- PORTE -->
+      <div class="form-section-head"><span class="form-section-num">2</span>Porte do condomínio</div>
+      <div class="form-group">
+        <label>Total de unidades</label>
+        <input type="number" id="fin-unidades" placeholder="Ex: 80" min="1" max="2000" oninput="updateBenchmarkHints()">
+      </div>
+      <div class="form-group">
+        <label>Cota condominial atual (por unidade/mês)</label>
+        <div class="input-prefix"><input type="number" id="fin-cota" placeholder="350,00" step="0.01" min="0"></div>
+      </div>
+      <div class="form-group">
+        <label>Porte do condomínio</label>
+        <div class="size-pills">
+          <button class="size-pill" onclick="selectSize('pequeno',this)">Pequeno (até 30 un.)</button>
+          <button class="size-pill active" onclick="selectSize('medio',this)">Médio (31–100 un.)</button>
+          <button class="size-pill" onclick="selectSize('grande',this)">Grande (100+ un.)</button>
+        </div>
+        <input type="hidden" id="fin-porte" value="medio">
+      </div>
+      <div class="form-divider"></div>
+      <!-- DESPESAS -->
+      <div class="form-section-head"><span class="form-section-num">3</span>Despesas mensais</div>
+      <p style="font-size:12px;color:var(--muted);margin-bottom:14px;line-height:1.5">Informe o valor mensal de cada categoria. Deixe em branco se não se aplica.</p>
+      <div class="cat-grid">
+        <div class="cat-item">
+          <div class="cat-label"><span class="cat-emoji">🧹</span>Limpeza / Zeladoria</div>
+          <div class="cat-input input-prefix"><input type="number" id="cat-limpeza" placeholder="0,00" min="0" step="0.01" oninput="updateSim()"></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-label"><span class="cat-emoji">🔒</span>Portaria / Segurança</div>
+          <div class="cat-input input-prefix"><input type="number" id="cat-portaria" placeholder="0,00" min="0" step="0.01" oninput="updateSim()"></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-label"><span class="cat-emoji">⚡</span>Energia Elétrica</div>
+          <div class="cat-input input-prefix"><input type="number" id="cat-energia" placeholder="0,00" min="0" step="0.01" oninput="updateSim()"></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-label"><span class="cat-emoji">💧</span>Água / Gás</div>
+          <div class="cat-input input-prefix"><input type="number" id="cat-agua" placeholder="0,00" min="0" step="0.01" oninput="updateSim()"></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-label"><span class="cat-emoji">🔧</span>Manutenção</div>
+          <div class="cat-input input-prefix"><input type="number" id="cat-manutencao" placeholder="0,00" min="0" step="0.01" oninput="updateSim()"></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-label"><span class="cat-emoji">🏢</span>Administração</div>
+          <div class="cat-input input-prefix"><input type="number" id="cat-admin" placeholder="0,00" min="0" step="0.01" oninput="updateSim()"></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-label"><span class="cat-emoji">💰</span>Fundo de Reserva</div>
+          <div class="cat-input input-prefix"><input type="number" id="cat-reserva" placeholder="0,00" min="0" step="0.01" oninput="updateSim()"></div>
+        </div>
+        <div class="cat-item">
+          <div class="cat-label"><span class="cat-emoji">📦</span>Outras Despesas</div>
+          <div class="cat-input input-prefix"><input type="number" id="cat-outras" placeholder="0,00" min="0" step="0.01" oninput="updateSim()"></div>
+        </div>
+      </div>
+    </div>
+    <div style="height:16px"></div>
+    <button class="btn-generate" onclick="gerarDiagnostico()">📊 Gerar Diagnóstico Financeiro</button>
+  </div>
+</div>
+
+<!-- ══ DASHBOARD ══ -->
+<div id="dashboard" class="screen">
+  <div class="screen-nav">
+    <button class="nav-back" onclick="showScreen('form')">← Voltar</button>
+    <span class="nav-title">Diagnóstico Financeiro</span>
+    <span class="nav-step">Passo 2 de 2</span>
+  </div>
+
+  <!-- Score Hero -->
+  <div class="dash-hero">
+    <div class="score-wrap">
+      <div class="score-label-top">Score de Saúde Financeira</div>
+      <canvas id="score-gauge" width="200" height="120"></canvas>
+      <div class="score-number" id="score-num">—</div>
+      <div class="score-verdict" id="score-verdict">Calculando...</div>
+    </div>
+  </div>
+
+  <!-- KPIs -->
+  <div class="kpi-row">
+    <div class="kpi-card">
+      <div class="kpi-label">Total mensal</div>
+      <div class="kpi-value" id="kpi-total">—</div>
+      <div class="kpi-sub" id="kpi-por-unidade">—</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Arrecadação</div>
+      <div class="kpi-value" id="kpi-arrecadacao">—</div>
+      <div class="kpi-sub" id="kpi-saldo-label">Saldo estimado</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Potencial economia</div>
+      <div class="kpi-value kpi-green" id="kpi-economia">—</div>
+      <div class="kpi-sub">se atingir a média</div>
+    </div>
+    <div class="kpi-card">
+      <div class="kpi-label">Nova cota possível</div>
+      <div class="kpi-value kpi-green" id="kpi-nova-cota">—</div>
+      <div class="kpi-sub" id="kpi-reducao">redução estimada</div>
+    </div>
+  </div>
+
+  <div class="dash-body">
+    <!-- Gráfico donut -->
+    <div class="section-head">Distribuição das despesas</div>
+    <div class="chart-card">
+      <div class="chart-container">
+        <canvas id="donut-chart" width="140" height="140"></canvas>
+        <div class="chart-legend" id="chart-legend"></div>
+      </div>
+    </div>
+
+    <!-- Benchmark -->
+    <div class="section-head">Análise por categoria — benchmark de mercado</div>
+    <div class="bench-card" id="bench-container"></div>
+
+    <!-- Simulador -->
+    <div class="section-head">Simulador de Impacto na Cota</div>
+    <div class="sim-card">
+      <div class="sim-header">
+        <div class="sim-icon">🎛️</div>
+        <div>
+          <div class="sim-title">Arraste os sliders e veja o impacto</div>
+          <div class="sim-sub">Cada ajuste recalcula a cota instantaneamente</div>
+        </div>
+      </div>
+      <div class="sim-result">
+        <div class="sim-result-row">
+          <div class="sim-metric">
+            <span class="sim-metric-val" id="sim-nova-cota">—</span>
+            <span class="sim-metric-label">Nova cota</span>
+          </div>
+          <div class="sim-divider"></div>
+          <div class="sim-metric">
+            <span class="sim-metric-val green" id="sim-economia-mes">—</span>
+            <span class="sim-metric-label">Economia/mês</span>
+          </div>
+          <div class="sim-divider"></div>
+          <div class="sim-metric">
+            <span class="sim-metric-val green" id="sim-economia-ano">—</span>
+            <span class="sim-metric-label">Economia/ano</span>
+          </div>
+        </div>
+      </div>
+      <div class="sim-savings-banner" id="sim-savings-banner" style="display:none">
+        <span class="sim-savings-icon">🎉</span>
+        <div class="sim-savings-text">
+          <span class="sim-savings-val" id="sim-savings-val">—</span>
+          <span class="sim-savings-sub" id="sim-savings-sub">—</span>
+        </div>
+      </div>
+      <div id="sliders-container"></div>
+    </div>
+
+    <!-- Plano de ação -->
+    <div class="section-head">Plano de ação — Top 3 oportunidades</div>
+    <div class="plan-card" id="plan-container"></div>
+
+    <!-- Botões -->
+    <div style="height:8px"></div>
+    <button class="btn-generate" onclick="gerarRelatorio()">📄 Gerar Relatório de Prestação de Contas</button>
+    <div style="height:8px"></div>
+    <button class="btn-secondary" onclick="showScreen('form')">← Editar dados</button>
+  </div>
+</div>
+
+<!-- ══ RELATÓRIO ══ -->
+<div id="relatorio" class="screen">
+  <div class="screen-nav">
+    <button class="nav-back" onclick="showScreen('dashboard')">← Voltar</button>
+    <span class="nav-title">Relatório Financeiro</span>
+  </div>
+  <div class="report-success">
+    <div class="success-ring">✓</div>
+    <div class="success-title">Relatório Gerado</div>
+    <div class="success-sub">Pronto para imprimir, copiar ou enviar em assembleia</div>
+  </div>
+  <div class="report-body">
+    <div class="output-content" id="report-text"></div>
+    <button class="copy-btn" id="copy-report-btn" onclick="copiarRelatorio()">📋 Copiar Relatório</button>
+    <button class="btn-download" onclick="baixarRelatorio()">⬇️ Baixar / Imprimir (HTML)</button>
+    <button class="btn-secondary" onclick="showScreen('dashboard')">← Voltar ao Diagnóstico</button>
+    <div style="height:10px"></div>
+    <button class="btn-secondary" onclick="showScreen('home')" style="border-color:transparent;color:var(--muted2)">Novo diagnóstico</button>
+  </div>
+</div>
+
+</div><!-- /max -->
+
+<script>
+// ═══════════════════════════════════════════════════════════
+// BENCHMARKS — valores por unidade por mês (R$)
+// Fonte: médias de mercado ABRASSP / pesquisa setorial 2024
+// ═══════════════════════════════════════════════════════════
+const BENCH = {
+  pequeno: {
+    limpeza:    { min:60,  avg:85,  max:130, label:'Limpeza / Zeladoria',  emoji:'🧹', id:'cat-limpeza'  },
+    portaria:   { min:40,  avg:70,  max:110, label:'Portaria / Segurança', emoji:'🔒', id:'cat-portaria' },
+    energia:    { min:20,  avg:38,  max:65,  label:'Energia Elétrica',     emoji:'⚡', id:'cat-energia'  },
+    agua:       { min:12,  avg:24,  max:45,  label:'Água / Gás',           emoji:'💧', id:'cat-agua'     },
+    manutencao: { min:18,  avg:34,  max:60,  label:'Manutenção',           emoji:'🔧', id:'cat-manutencao'},
+    admin:      { min:8,   avg:14,  max:24,  label:'Administração',        emoji:'🏢', id:'cat-admin'    },
+    reserva:    { min:12,  avg:22,  max:40,  label:'Fundo de Reserva',     emoji:'💰', id:'cat-reserva'  },
+    outras:     { min:8,   avg:16,  max:32,  label:'Outras Despesas',      emoji:'📦', id:'cat-outras'   }
+  },
+  medio: {
+    limpeza:    { min:75,  avg:98,  max:145, label:'Limpeza / Zeladoria',  emoji:'🧹', id:'cat-limpeza'  },
+    portaria:   { min:55,  avg:85,  max:135, label:'Portaria / Segurança', emoji:'🔒', id:'cat-portaria' },
+    energia:    { min:28,  avg:46,  max:82,  label:'Energia Elétrica',     emoji:'⚡', id:'cat-energia'  },
+    agua:       { min:16,  avg:32,  max:55,  label:'Água / Gás',           emoji:'💧', id:'cat-agua'     },
+    manutencao: { min:22,  avg:42,  max:72,  label:'Manutenção',           emoji:'🔧', id:'cat-manutencao'},
+    admin:      { min:10,  avg:18,  max:28,  label:'Administração',        emoji:'🏢', id:'cat-admin'    },
+    reserva:    { min:15,  avg:26,  max:48,  label:'Fundo de Reserva',     emoji:'💰', id:'cat-reserva'  },
+    outras:     { min:10,  avg:20,  max:38,  label:'Outras Despesas',      emoji:'📦', id:'cat-outras'   }
+  },
+  grande: {
+    limpeza:    { min:65,  avg:88,  max:130, label:'Limpeza / Zeladoria',  emoji:'🧹', id:'cat-limpeza'  },
+    portaria:   { min:45,  avg:72,  max:115, label:'Portaria / Segurança', emoji:'🔒', id:'cat-portaria' },
+    energia:    { min:22,  avg:40,  max:70,  label:'Energia Elétrica',     emoji:'⚡', id:'cat-energia'  },
+    agua:       { min:14,  avg:27,  max:48,  label:'Água / Gás',           emoji:'💧', id:'cat-agua'     },
+    manutencao: { min:18,  avg:36,  max:62,  label:'Manutenção',           emoji:'🔧', id:'cat-manutencao'},
+    admin:      { min:8,   avg:14,  max:22,  label:'Administração',        emoji:'🏢', id:'cat-admin'    },
+    reserva:    { min:12,  avg:22,  max:40,  label:'Fundo de Reserva',     emoji:'💰', id:'cat-reserva'  },
+    outras:     { min:8,   avg:17,  max:32,  label:'Outras Despesas',      emoji:'📦', id:'cat-outras'   }
+  }
+};
+
+const CHART_COLORS = ['#10B981','#2563EB','#F59E0B','#7C3AED','#F43F5E','#0891B2','#8B5CF6','#6B7280'];
+const CAT_KEYS = ['limpeza','portaria','energia','agua','manutencao','admin','reserva','outras'];
+
+let _porte = 'medio';
+let _finData = {};
+let _simValues = {};
+let _reportText = '';
+
+const SF_KEY_USER = 'sf_user';
+
+function showScreen(id) {
+  document.querySelectorAll('.screen').forEach(s => s.classList.remove('active'));
+  document.getElementById(id).classList.add('active');
+  window.scrollTo(0,0);
+  if (id === 'form') autoFill();
+  if (id === 'home') renderHero();
+}
+
+function renderHero() {
+  // noop for now
+}
+
+function selectSize(porte, btn) {
+  _porte = porte;
+  document.getElementById('fin-porte').value = porte;
+  document.querySelectorAll('.size-pill').forEach(p => p.classList.remove('active'));
+  btn.classList.add('active');
+}
+
+function autoFill() {
+  try {
+    const u = JSON.parse(localStorage.getItem(SF_KEY_USER) || 'null');
+    if (!u) return;
+    const cc = document.getElementById('fin-condo');
+    const cs = document.getElementById('fin-sindico');
+    if (cc && !cc.value) cc.value = u.condo || '';
+    if (cs && !cs.value) cs.value = u.sindico || '';
+    const hint = document.getElementById('autofill-hint-fin');
+    if (hint && u.condo) hint.style.display = 'block';
+  } catch(e){}
+}
+
+function updateBenchmarkHints() { /* live feedback on form — future enhancement */ }
+
+function getVal(id) { return parseFloat(document.getElementById(id).value) || 0; }
+
+function gerarDiagnostico() {
+  const condo   = document.getElementById('fin-condo').value.trim()   || 'Condomínio';
+  const sindico = document.getElementById('fin-sindico').value.trim() || 'Síndico(a)';
+  const unidades= parseInt(document.getElementById('fin-unidades').value) || 50;
+  const cotaAtual = getVal('fin-cota');
+  const porte   = document.getElementById('fin-porte').value || 'medio';
+
+  if (unidades < 1) { alert('Informe o total de unidades.'); return; }
+
+  const bench = BENCH[porte];
+  const cats = {};
+  let totalDespesas = 0;
+
+  CAT_KEYS.forEach(k => {
+    const raw = getVal('cat-' + (k === 'admin' ? 'admin' : k === 'reserva' ? 'reserva' : k === 'outras' ? 'outras' : k));
+    cats[k] = raw;
+    totalDespesas += raw;
+  });
+
+  if (totalDespesas === 0) { alert('Preencha ao menos uma categoria de despesa.'); return; }
+
+  // Save user data
+  try { localStorage.setItem(SF_KEY_USER, JSON.stringify({condo, sindico})); } catch(e){}
+
+  _porte = porte;
+  _finData = { condo, sindico, unidades, cotaAtual, cats, totalDespesas, bench, porte };
+
+  // Init sim values = input values
+  CAT_KEYS.forEach(k => { _simValues[k] = cats[k]; });
+
+  // Render dashboard
+  renderScore();
+  renderKPIs();
+  renderDonut();
+  renderBenchmark();
+  renderSliders();
+  renderPlan();
+  updateSim();
+
+  showScreen('dashboard');
+}
+
+// ── SCORE ──────────────────────────────────────────────────
+function calcScore() {
+  const d = _finData;
+  const bench = d.bench;
+  let score = 100;
+  let totalIdeal = 0;
+  let totalOver = 0;
+
+  CAT_KEYS.forEach(k => {
+    const val = d.cats[k];
+    if (val === 0) return;
+    const ref = bench[k];
+    const perUnit = val / d.unidades;
+    totalIdeal += ref.avg * d.unidades;
+    if (perUnit > ref.max) {
+      const excess = (perUnit - ref.max) / ref.max;
+      score -= Math.min(12, excess * 30);
+      totalOver += (perUnit - ref.avg) * d.unidades;
+    } else if (perUnit > ref.avg) {
+      const ratio = (perUnit - ref.avg) / (ref.max - ref.avg);
+      score -= ratio * 6;
+    }
+  });
+
+  // Penalidade por deficit
+  const arrecadacao = d.cotaAtual * d.unidades;
+  if (d.cotaAtual > 0 && arrecadacao < d.totalDespesas) {
+    score -= 15;
+  }
+
+  // Penalidade por sem reserva
+  if (d.cats.reserva === 0) score -= 8;
+
+  return Math.max(0, Math.min(100, Math.round(score)));
+}
+
+function renderScore() {
+  const score = calcScore();
+  document.getElementById('score-num').textContent = score;
+
+  // Verdict
+  const vEl = document.getElementById('score-verdict');
+  vEl.className = 'score-verdict';
+  if (score >= 80) { vEl.textContent = '✓ Ótimo — finanças saudáveis'; vEl.classList.add('verdict-otimo'); }
+  else if (score >= 60) { vEl.textContent = '◎ Bom — pequenos ajustes'; vEl.classList.add('verdict-bom'); }
+  else if (score >= 40) { vEl.textContent = '⚠ Atenção — há desperdícios'; vEl.classList.add('verdict-atencao'); }
+  else { vEl.textContent = '✗ Crítico — ação imediata'; vEl.classList.add('verdict-critico'); }
+
+  // Gauge canvas
+  const canvas = document.getElementById('score-gauge');
+  const ctx = canvas.getContext('2d');
+  const W = 200, H = 120;
+  ctx.clearRect(0,0,W,H);
+
+  const cx = W/2, cy = H - 14;
+  const r = 80;
+  const startA = Math.PI;
+  const endA = 2 * Math.PI;
+
+  // Track bg
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, startA, endA);
+  ctx.strokeStyle = 'rgba(255,255,255,0.08)';
+  ctx.lineWidth = 14;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Score arc
+  const scoreA = startA + (score / 100) * Math.PI;
+  const scoreColor = score >= 80 ? '#10B981' : score >= 60 ? '#34D399' : score >= 40 ? '#F59E0B' : '#EF4444';
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, startA, scoreA);
+  ctx.strokeStyle = scoreColor;
+  ctx.lineWidth = 14;
+  ctx.lineCap = 'round';
+  ctx.stroke();
+
+  // Glow
+  ctx.beginPath();
+  ctx.arc(cx, cy, r, startA, scoreA);
+  ctx.strokeStyle = scoreColor;
+  ctx.lineWidth = 2;
+  ctx.globalAlpha = 0.3;
+  ctx.shadowColor = scoreColor;
+  ctx.shadowBlur = 12;
+  ctx.stroke();
+  ctx.globalAlpha = 1;
+  ctx.shadowBlur = 0;
+
+  // Labels
+  ctx.fillStyle = 'rgba(255,255,255,0.28)';
+  ctx.font = 'bold 11px Arial';
+  ctx.textAlign = 'left';
+  ctx.fillText('0', cx - r - 6, cy + 14);
+  ctx.textAlign = 'right';
+  ctx.fillText('100', cx + r + 6, cy + 14);
+}
+
+// ── KPIs ──────────────────────────────────────────────────
+function renderKPIs() {
+  const d = _finData;
+  const arrecadacao = d.cotaAtual * d.unidades;
+  const saldo = arrecadacao - d.totalDespesas;
+  const bench = d.bench;
+
+  let potencial = 0;
+  CAT_KEYS.forEach(k => {
+    const val = d.cats[k];
+    if (val === 0) return;
+    const avgTotal = bench[k].avg * d.unidades;
+    if (val > avgTotal) potencial += (val - avgTotal);
+  });
+
+  const novaCota = d.cotaAtual > 0
+    ? ((d.totalDespesas - potencial) / d.unidades)
+    : ((d.totalDespesas - potencial) / d.unidades);
+  const reducao = d.cotaAtual > 0 ? d.cotaAtual - novaCota : 0;
+
+  document.getElementById('kpi-total').textContent = 'R$\u00A0' + fmt(d.totalDespesas);
+  document.getElementById('kpi-por-unidade').textContent = 'R$\u00A0' + fmt(d.totalDespesas / d.unidades) + ' / unidade';
+  document.getElementById('kpi-arrecadacao').textContent = d.cotaAtual > 0 ? 'R$\u00A0' + fmt(arrecadacao) : 'Não informado';
+
+  const saldoEl = document.getElementById('kpi-saldo-label');
+  if (d.cotaAtual > 0) {
+    const saldoValEl = document.createElement('span');
+    saldoEl.innerHTML = saldo >= 0
+      ? '<span style="color:var(--green)">Superávit R$\u00A0' + fmt(saldo) + '</span>'
+      : '<span style="color:var(--red)">Déficit R$\u00A0' + fmt(Math.abs(saldo)) + '</span>';
+  } else {
+    saldoEl.textContent = 'Insira a cota para calcular';
+  }
+
+  document.getElementById('kpi-economia').textContent = 'R$\u00A0' + fmt(potencial) + '/mês';
+  document.getElementById('kpi-nova-cota').textContent = 'R$\u00A0' + fmt(novaCota);
+  document.getElementById('kpi-reducao').textContent = reducao > 0
+    ? '↓ R$\u00A0' + fmt(reducao) + ' por unidade'
+    : 'aprox. por unidade';
+}
+
+// ── DONUT CHART ──────────────────────────────────────────
+function renderDonut() {
+  const d = _finData;
+  const canvas = document.getElementById('donut-chart');
+  const ctx = canvas.getContext('2d');
+  const W = 140, H = 140;
+  ctx.clearRect(0,0,W,H);
+
+  const cx = W/2, cy = H/2, ro = 60, ri = 36;
+  let startAngle = -Math.PI/2;
+  const legend = document.getElementById('chart-legend');
+  legend.innerHTML = '';
+
+  CAT_KEYS.forEach((k, i) => {
+    const val = d.cats[k];
+    if (val === 0) return;
+    const pct = val / d.totalDespesas;
+    const sweep = pct * 2 * Math.PI;
+
+    ctx.beginPath();
+    ctx.moveTo(cx + Math.cos(startAngle) * ri, cy + Math.sin(startAngle) * ri);
+    ctx.arc(cx, cy, ro, startAngle, startAngle + sweep);
+    ctx.arc(cx, cy, ri, startAngle + sweep, startAngle, true);
+    ctx.closePath();
+    ctx.fillStyle = CHART_COLORS[i % CHART_COLORS.length];
+    ctx.fill();
+
+    startAngle += sweep;
+
+    // Legend
+    const bench = d.bench[k];
+    const div = document.createElement('div');
+    div.className = 'legend-item';
+    div.innerHTML = `<div class="legend-dot" style="background:${CHART_COLORS[i%CHART_COLORS.length]}"></div>
+      <span class="legend-text">${bench.label}</span>
+      <span class="legend-pct">${Math.round(pct*100)}%</span>`;
+    legend.appendChild(div);
+  });
+
+  // Center hole label
+  ctx.fillStyle = '#fff';
+  ctx.font = 'bold 12px Arial';
+  ctx.textAlign = 'center';
+  ctx.fillText('Total', cx, cy - 4);
+  ctx.font = '10px Arial';
+  ctx.fillStyle = 'rgba(255,255,255,0.6)';
+  ctx.fillText('R$ ' + fmtK(d.totalDespesas), cx, cy + 12);
+}
+
+// ── BENCHMARK BARS ──────────────────────────────────────
+function renderBenchmark() {
+  const d = _finData;
+  const bench = d.bench;
+  const container = document.getElementById('bench-container');
+  container.innerHTML = '';
+
+  CAT_KEYS.forEach((k, i) => {
+    const val = d.cats[k];
+    if (val === 0) return;
+
+    const ref = bench[k];
+    const perUnit = val / d.unidades;
+    const maxVal = Math.max(perUnit, ref.max) * 1.15;
+    const fillPct = Math.min(100, (perUnit / maxVal) * 100);
+    const avgPct = (ref.avg / maxVal) * 100;
+
+    let status, badgeClass, fillClass, statusLabel;
+    if (perUnit <= ref.avg) {
+      status = 'Dentro da média'; badgeClass = 'badge-ok'; fillClass = 'bar-ok';
+    } else if (perUnit <= ref.max) {
+      status = 'Acima da média'; badgeClass = 'badge-warn'; fillClass = 'bar-warn';
+    } else {
+      const pctOver = Math.round(((perUnit - ref.avg) / ref.avg) * 100);
+      status = '+' + pctOver + '% acima'; badgeClass = 'badge-over'; fillClass = 'bar-over';
+    }
+
+    const div = document.createElement('div');
+    div.className = 'bench-row';
+    div.innerHTML = `
+      <div class="bench-top">
+        <span class="bench-name">${ref.emoji} ${ref.label}</span>
+        <div class="bench-amounts">
+          <span class="bench-current">R$\u00A0${fmt(perUnit)}/un.</span>
+          <span class="bench-badge ${badgeClass}">${status}</span>
+        </div>
+      </div>
+      <div class="bench-bar-bg">
+        <div class="bench-bar-fill ${fillClass}" style="width:${fillPct}%"></div>
+        <div class="bench-avg-marker" style="left:${avgPct}%"></div>
+        <div class="bench-avg-label" style="left:${avgPct}%">Média R$\u00A0${fmt(ref.avg)}</div>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+// ── SLIDERS ──────────────────────────────────────────────
+function renderSliders() {
+  const d = _finData;
+  const container = document.getElementById('sliders-container');
+  container.innerHTML = '';
+
+  CAT_KEYS.forEach(k => {
+    const val = d.cats[k];
+    if (val === 0) return;
+    const ref = d.bench[k];
+    const minVal = Math.round(ref.min * d.unidades * 0.7);
+    const maxVal = Math.round(Math.max(val, ref.max * d.unidades) * 1.1);
+
+    const div = document.createElement('div');
+    div.className = 'slider-row';
+    div.innerHTML = `
+      <div class="slider-top">
+        <span class="slider-name">${ref.emoji} ${ref.label}</span>
+        <div class="slider-vals">
+          <span class="slider-orig" id="orig-${k}">R$\u00A0${fmt(val)}</span>
+          <span class="slider-curr" id="curr-${k}">R$\u00A0${fmt(val)}</span>
+        </div>
+      </div>
+      <input type="range" id="slider-${k}" min="${minVal}" max="${maxVal}" value="${Math.round(val)}" step="50" oninput="onSlider('${k}', this.value)">
+      <div class="slider-range-labels">
+        <span>R$\u00A0${fmtK(minVal)} (mín.)</span>
+        <span>Média: R$\u00A0${fmtK(ref.avg * d.unidades)}</span>
+        <span>R$\u00A0${fmtK(maxVal)}</span>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+function onSlider(k, val) {
+  _simValues[k] = parseFloat(val);
+  document.getElementById('curr-' + k).textContent = 'R$\u00A0' + fmt(parseFloat(val));
+  updateSimDisplay();
+}
+
+function updateSim() {
+  // Called from form inputs too — update sliders if on dashboard
+  CAT_KEYS.forEach(k => {
+    const sl = document.getElementById('slider-' + k);
+    if (sl) {
+      const formVal = getVal('cat-' + (k==='admin'?'admin':k==='reserva'?'reserva':k==='outras'?'outras':k));
+      if (formVal > 0) { sl.value = Math.round(formVal); _simValues[k] = formVal; }
+    }
+  });
+  updateSimDisplay();
+}
+
+function updateSimDisplay() {
+  const d = _finData;
+  if (!d.unidades) return;
+
+  let simTotal = 0;
+  CAT_KEYS.forEach(k => { simTotal += (_simValues[k] || 0); });
+
+  const novaCota = simTotal / d.unidades;
+  const economiaM = d.totalDespesas - simTotal;
+  const economiaA = economiaM * 12;
+  const cotaDiff = economiaM / d.unidades;
+
+  document.getElementById('sim-nova-cota').textContent = 'R$\u00A0' + fmt(novaCota);
+  document.getElementById('sim-economia-mes').textContent = (economiaM >= 0 ? '↓ R$\u00A0' : '↑ R$\u00A0') + fmt(Math.abs(economiaM));
+  document.getElementById('sim-economia-ano').textContent = (economiaA >= 0 ? '↓ R$\u00A0' : '↑ R$\u00A0') + fmt(Math.abs(economiaA));
+
+  const banner = document.getElementById('sim-savings-banner');
+  if (economiaM > 50) {
+    banner.style.display = 'flex';
+    document.getElementById('sim-savings-val').textContent = 'Economia de R$\u00A0' + fmt(economiaA) + '/ano';
+    document.getElementById('sim-savings-sub').textContent = 'Redução de R$\u00A0' + fmt(cotaDiff) + ' por unidade por mês — toda assembléia vai adorar!';
+  } else {
+    banner.style.display = 'none';
+  }
+}
+
+// ── PLAN ─────────────────────────────────────────────────
+function renderPlan() {
+  const d = _finData;
+  const bench = d.bench;
+
+  // Find top overperforming categories
+  const overItems = CAT_KEYS
+    .filter(k => d.cats[k] > 0)
+    .map(k => {
+      const perUnit = d.cats[k] / d.unidades;
+      const over = perUnit - bench[k].avg;
+      const overTotal = over * d.unidades;
+      return { k, perUnit, over, overTotal, ref: bench[k] };
+    })
+    .filter(x => x.over > 0)
+    .sort((a,b) => b.overTotal - a.overTotal)
+    .slice(0, 3);
+
+  const TIPS = {
+    limpeza:    'Solicite 3 orçamentos de empresas de limpeza terceirizada. Pequenas empresas locais costumam cobrar 15–25% menos com a mesma qualidade.',
+    portaria:   'Avalie portaria virtual ou sistema de câmeras + interfone. A economia média é de 30–40% em relação à portaria presencial 24h.',
+    energia:    'Instale sensores de presença nas áreas comuns e troque as lâmpadas restantes por LED. ROI médio em 8–14 meses.',
+    agua:       'Realize inspeção de vazamentos e considere hidrômetros individuais. Condomínios que adotaram economizam em média 22% na conta de água.',
+    manutencao: 'Crie um calendário de manutenção preventiva. Manutenção corretiva custa em média 3× mais do que a preventiva.',
+    admin:      'Renegocie o contrato com a administradora comparando pelo menos 2 propostas concorrentes. A taxa média do mercado é de 5–8% da receita.',
+    reserva:    'O ideal é destinar 5–10% da arrecadação ao fundo de reserva. Condomínios sem reserva enfrentam taxa extra em emergências.',
+    outras:     'Mapeie todas as despesas avulsas e crie um centro de custo. Pequenos gastos não monitorados chegam a 8–12% do orçamento.'
+  };
+
+  const container = document.getElementById('plan-container');
+  container.innerHTML = '';
+
+  if (overItems.length === 0) {
+    container.innerHTML = '<p style="text-align:center;color:var(--green);font-weight:700;padding:16px">🏆 Parabéns! Todas as categorias estão dentro ou abaixo da média de mercado.</p>';
+    return;
+  }
+
+  const numColors = ['plan-num-1','plan-num-2','plan-num-3'];
+  overItems.forEach((item, i) => {
+    const div = document.createElement('div');
+    div.className = 'plan-item';
+    div.innerHTML = `
+      <div class="plan-num ${numColors[i]}">${i+1}</div>
+      <div class="plan-text">
+        <div class="plan-title">${item.ref.emoji} ${item.ref.label}</div>
+        <div class="plan-desc">${TIPS[item.k]}</div>
+        <div class="plan-saving">💰 Potencial de economia: R$\u00A0${fmt(item.overTotal)}/mês (R$\u00A0${fmt(item.overTotal*12)}/ano)</div>
+      </div>`;
+    container.appendChild(div);
+  });
+}
+
+// ── RELATÓRIO ─────────────────────────────────────────────
+function gerarRelatorio() {
+  const d = _finData;
+  const bench = d.bench;
+  const hoje = getToday();
+  const score = calcScore();
+
+  let catLines = '';
+  let totalIdeal = 0;
+  CAT_KEYS.forEach(k => {
+    const val = d.cats[k];
+    if (val === 0) return;
+    const ref = bench[k];
+    const perUnit = val / d.unidades;
+    const avgTotal = ref.avg * d.unidades;
+    const status = perUnit <= ref.avg ? '✓ OK' : perUnit <= ref.max ? '⚠ Acima' : '✗ Alto';
+    catLines += `  ${ref.label.padEnd(24)} R$ ${fmt(val).padStart(10)}   (R$ ${fmt(perUnit)}/un.) ${status}\n`;
+    totalIdeal += avgTotal;
+  });
+
+  const arrecadacao = d.cotaAtual > 0 ? d.cotaAtual * d.unidades : null;
+  const saldo = arrecadacao ? arrecadacao - d.totalDespesas : null;
+  const potencial = d.totalDespesas - totalIdeal;
+
+  let simTotal = 0;
+  CAT_KEYS.forEach(k => { simTotal += (_simValues[k] || d.cats[k] || 0); });
+  const cotaSim = simTotal / d.unidades;
+  const economiaMes = d.totalDespesas - simTotal;
+
+  const overItems = CAT_KEYS
+    .filter(k => d.cats[k] > 0)
+    .map(k => ({ k, over: (d.cats[k]/d.unidades) - bench[k].avg, ref: bench[k], overTotal: ((d.cats[k]/d.unidades) - bench[k].avg)*d.unidades }))
+    .filter(x => x.over > 0)
+    .sort((a,b) => b.overTotal - a.overTotal);
+
+  let planLines = overItems.length === 0
+    ? '  Todas as categorias estão dentro ou abaixo da média de mercado. Parabéns!\n'
+    : overItems.slice(0,3).map((x,i) => `  ${i+1}. ${x.ref.label}: potencial de R$ ${fmt(x.overTotal*12)}/ano de economia`).join('\n') + '\n';
+
+  const report =
+`${d.condo.toUpperCase()}
+RELATÓRIO DE SAÚDE FINANCEIRA — ${hoje}
+Gerado por SíndicoFácil (módulo Vortiq)
+${'─'.repeat(52)}
+
+SÍNDICO(A): ${d.sindico}
+UNIDADES:   ${d.unidades} unidades
+PORTE:      ${d.porte === 'pequeno' ? 'Pequeno (até 30 un.)' : d.porte === 'medio' ? 'Médio (31–100 un.)' : 'Grande (100+ un.)'}
+
+${'═'.repeat(52)}
+SCORE DE SAÚDE FINANCEIRA: ${score}/100
+${'═'.repeat(52)}
+${score >= 80 ? '✓ ÓTIMO — Finanças saudáveis' : score >= 60 ? '◎ BOM — Pequenos ajustes recomendados' : score >= 40 ? '⚠ ATENÇÃO — Há desperdícios identificados' : '✗ CRÍTICO — Ação imediata necessária'}
+
+${'─'.repeat(52)}
+DESPESAS MENSAIS POR CATEGORIA
+${'─'.repeat(52)}
+${catLines}
+  ${'─'.repeat(44)}
+  TOTAL DESPESAS           R$ ${fmt(d.totalDespesas).padStart(10)}
+${arrecadacao ? `  ARRECADAÇÃO ESTIMADA    R$ ${fmt(arrecadacao).padStart(10)}\n  SALDO                   R$ ${(saldo >= 0 ? '+' : '') + fmt(saldo).padStart(9)}\n` : ''}
+${'─'.repeat(52)}
+ANÁLISE DE BENCHMARK
+${'─'.repeat(52)}
+  Despesas atuais:  R$ ${fmt(d.totalDespesas)}/mês
+  Despesas (média): R$ ${fmt(totalIdeal)}/mês
+  Potencial eco.:   R$ ${fmt(Math.max(0, d.totalDespesas - totalIdeal))}/mês
+
+${'─'.repeat(52)}
+SIMULADOR — CENÁRIO PROJETADO
+${'─'.repeat(52)}
+  Total projetado: R$ ${fmt(simTotal)}/mês
+  Cota projetada:  R$ ${fmt(cotaSim)}/unidade
+  Economia mensal: R$ ${fmt(economiaMes)}/mês
+  Economia anual:  R$ ${fmt(economiaMes*12)}/ano
+
+${'─'.repeat(52)}
+PLANO DE AÇÃO — TOP OPORTUNIDADES
+${'─'.repeat(52)}
+${planLines}
+${'═'.repeat(52)}
+${d.condo}, ${hoje}
+
+___________________________________________
+${d.sindico}
+Síndico(a) — ${d.condo}
+
+──────────────────────────────────────────
+Relatório gerado pelo SíndicoFácil — Vortiq
+Benchmark: médias de mercado ABRASSP 2024`;
+
+  _reportText = report;
+  document.getElementById('report-text').textContent = report;
+  document.getElementById('copy-report-btn').textContent = '📋 Copiar Relatório';
+  document.getElementById('copy-report-btn').classList.remove('copied');
+  showScreen('relatorio');
+}
+
+function copiarRelatorio() {
+  const doSuccess = () => {
+    const btn = document.getElementById('copy-report-btn');
+    btn.textContent = '✅ Copiado!';
+    btn.classList.add('copied');
+    setTimeout(() => { btn.textContent = '📋 Copiar Relatório'; btn.classList.remove('copied'); }, 2500);
+  };
+  if (navigator.clipboard && window.isSecureContext) {
+    navigator.clipboard.writeText(_reportText).then(doSuccess).catch(() => _fbCopy(_reportText, doSuccess));
+  } else { _fbCopy(_reportText, doSuccess); }
+}
+
+function _fbCopy(text, cb) {
+  const ta = document.createElement('textarea');
+  ta.value = text;
+  ta.style.cssText = 'position:fixed;top:0;left:0;opacity:0;pointer-events:none';
+  document.body.appendChild(ta); ta.focus(); ta.select();
+  try { document.execCommand('copy'); if(cb) cb(); } catch(e){}
+  document.body.removeChild(ta);
+}
+
+function baixarRelatorio() {
+  const d = _finData;
+  const score = calcScore();
+  const bench = d.bench;
+  const hoje = getToday();
+
+  let catRows = '';
+  let totalIdeal = 0;
+  const CHART_COLORS_HEX = ['#10B981','#2563EB','#F59E0B','#7C3AED','#F43F5E','#0891B2','#8B5CF6','#6B7280'];
+
+  let pieSlices = [];
+  CAT_KEYS.forEach((k, i) => {
+    const val = d.cats[k];
+    if (val === 0) return;
+    const ref = bench[k];
+    const perUnit = val / d.unidades;
+    const avgTotal = ref.avg * d.unidades;
+    totalIdeal += avgTotal;
+    const statusColor = perUnit <= ref.avg ? '#059669' : perUnit <= ref.max ? '#D97706' : '#DC2626';
+    const statusText  = perUnit <= ref.avg ? 'Dentro da média' : perUnit <= ref.max ? 'Acima da média' : 'Alto — revisar';
+    const pct = Math.round((val / d.totalDespesas) * 100);
+    catRows += `<tr><td>${ref.emoji} ${ref.label}</td><td>R$ ${fmt(val)}</td><td>R$ ${fmt(perUnit)}/un.</td><td style="color:${statusColor};font-weight:700">${statusText}</td><td>${pct}%</td></tr>`;
+    pieSlices.push({ label: ref.label, val, color: CHART_COLORS_HEX[i % CHART_COLORS_HEX.length], pct });
+  });
+
+  const scoreColor = score >= 80 ? '#059669' : score >= 60 ? '#10B981' : score >= 40 ? '#D97706' : '#DC2626';
+  const arrecadacao = d.cotaAtual > 0 ? d.cotaAtual * d.unidades : 0;
+  const saldo = arrecadacao - d.totalDespesas;
+
+  const overItems = CAT_KEYS
+    .filter(k => d.cats[k] > 0)
+    .map(k => ({ k, over: (d.cats[k]/d.unidades) - bench[k].avg, ref: bench[k], overTotal: ((d.cats[k]/d.unidades) - bench[k].avg)*d.unidades }))
+    .filter(x => x.over > 0)
+    .sort((a,b) => b.overTotal - a.overTotal)
+    .slice(0, 3);
+
+  let planRows = overItems.length === 0
+    ? '<tr><td colspan="2" style="text-align:center;color:#059669;font-weight:700">🏆 Todas as categorias dentro da média!</td></tr>'
+    : overItems.map((x,i) => `<tr><td>${i+1}. ${x.ref.emoji} ${x.ref.label}</td><td style="color:#059669;font-weight:700">Pot. R$ ${fmt(x.overTotal*12)}/ano</td></tr>`).join('');
+
+  const html = `<!DOCTYPE html><html lang="pt-BR"><head><meta charset="UTF-8">
+<title>Rel. Financeiro — ${d.condo}</title>
+<style>
+*{margin:0;padding:0;box-sizing:border-box}
+@page{size:A4;margin:16mm 20mm}
+body{font-family:Arial,sans-serif;font-size:10pt;color:#0F172A;line-height:1.5;padding:24px 30px}
+.pb{background:#065F46;color:#fff;border:none;border-radius:7px;padding:10px 22px;font-size:13px;font-weight:700;cursor:pointer;margin-bottom:18px;font-family:inherit}
+@media print{.pb{display:none}body{padding:0}}
+.hdr{text-align:center;border-bottom:3px solid #065F46;padding-bottom:12px;margin-bottom:14px}
+.condo-name{font-size:14pt;font-weight:900;text-transform:uppercase}
+.doc-title{font-size:11pt;font-weight:700;color:#065F46;margin-top:4px}
+.meta{font-size:9pt;color:#64748B;margin-top:3px}
+.score-box{display:flex;align-items:center;gap:20px;background:#F0FDF4;border:2px solid #A7F3D0;border-radius:12px;padding:14px 18px;margin:14px 0}
+.score-num{font-size:42pt;font-weight:900;color:${scoreColor};line-height:1}
+.score-info{}
+.score-label{font-size:9pt;color:#64748B;font-weight:700;text-transform:uppercase;letter-spacing:.5px}
+.score-verdict{font-size:11pt;font-weight:800;color:${scoreColor};margin-top:4px}
+.section{margin-top:16px}
+.section-title{font-size:9pt;font-weight:900;color:#065F46;text-transform:uppercase;letter-spacing:.5px;border-bottom:1.5px solid #A7F3D0;padding-bottom:4px;margin-bottom:10px}
+table{width:100%;border-collapse:collapse}
+th{text-align:left;font-size:8.5pt;font-weight:700;color:#64748B;text-transform:uppercase;padding:6px 8px;background:#F8FAFC;border-bottom:1.5px solid #E2E8F0}
+td{padding:7px 8px;font-size:9.5pt;border-bottom:1px solid #F1F5F9}
+tr:last-child td{border-bottom:none}
+.kpi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:10px;margin:12px 0}
+.kpi{background:#F8FAFC;border:1.5px solid #E2E8F0;border-radius:8px;padding:10px 12px}
+.kpi-l{font-size:8pt;color:#64748B;font-weight:700;text-transform:uppercase}
+.kpi-v{font-size:13pt;font-weight:900;color:#0F172A;letter-spacing:-.3px}
+.ftr{margin-top:20px;text-align:center;font-size:8pt;color:#94A3B8;border-top:1px solid #E2E8F0;padding-top:8px}
+.sig-row{display:flex;gap:32px;margin-top:20px}
+.sig{flex:1;border-top:1.5px solid #000;padding-top:6px;font-size:9pt}
+</style></head>
+<body>
+<button class="pb" onclick="window.print()">🖨️ Imprimir / Salvar como PDF</button>
+<div class="hdr">
+  <div class="condo-name">${d.condo}</div>
+  <div class="doc-title">Relatório de Saúde Financeira</div>
+  <div class="meta">${hoje} &nbsp;·&nbsp; ${d.unidades} unidades &nbsp;·&nbsp; Gerado pelo SíndicoFácil</div>
+</div>
+<div class="score-box">
+  <div class="score-num">${score}</div>
+  <div class="score-info">
+    <div class="score-label">Score de Saúde Financeira</div>
+    <div class="score-verdict">${score>=80?'✓ Ótimo — Finanças saudáveis':score>=60?'◎ Bom — Pequenos ajustes':score>=40?'⚠ Atenção — Revisar despesas':'✗ Crítico — Ação imediata'}</div>
+  </div>
+</div>
+<div class="kpi-grid">
+  <div class="kpi"><div class="kpi-l">Total Despesas</div><div class="kpi-v">R$ ${fmt(d.totalDespesas)}</div></div>
+  <div class="kpi"><div class="kpi-l">Custo / Unidade</div><div class="kpi-v">R$ ${fmt(d.totalDespesas/d.unidades)}</div></div>
+  ${d.cotaAtual > 0 ? `<div class="kpi"><div class="kpi-l">Arrecadação</div><div class="kpi-v">R$ ${fmt(arrecadacao)}</div></div><div class="kpi"><div class="kpi-l">Saldo</div><div class="kpi-v" style="color:${saldo>=0?'#059669':'#DC2626'}">${saldo>=0?'+':''}R$ ${fmt(saldo)}</div></div>` : `<div class="kpi"><div class="kpi-l">Pot. Economia</div><div class="kpi-v" style="color:#059669">R$ ${fmt(Math.max(0,d.totalDespesas-totalIdeal))}</div></div><div class="kpi"><div class="kpi-l">Benchmark Médio</div><div class="kpi-v">R$ ${fmt(totalIdeal)}</div></div>`}
+</div>
+<div class="section">
+  <div class="section-title">Despesas por categoria</div>
+  <table><thead><tr><th>Categoria</th><th>Total Mensal</th><th>Por Unidade</th><th>Status</th><th>%</th></tr></thead>
+  <tbody>${catRows}</tbody>
+  <tfoot><tr><td style="font-weight:900">TOTAL</td><td style="font-weight:900">R$ ${fmt(d.totalDespesas)}</td><td style="font-weight:900">R$ ${fmt(d.totalDespesas/d.unidades)}/un.</td><td></td><td>100%</td></tr></tfoot>
+  </table>
+</div>
+<div class="section">
+  <div class="section-title">Plano de ação — Oportunidades de economia</div>
+  <table><thead><tr><th>Categoria</th><th>Potencial</th></tr></thead><tbody>${planRows}</tbody></table>
+</div>
+<div class="sig-row">
+  <div class="sig"><strong>${d.sindico}</strong><br>Síndico(a) — ${d.condo}<br>Data: ____/____/______</div>
+  <div class="sig">Visto: ________________________<br>Administradora / Conselho<br>Data: ____/____/______</div>
+</div>
+<div class="ftr">Gerado pelo SíndicoFácil · Módulo Financeiro · Vortiq · Benchmark ABRASSP 2024</div>
+</body></html>`;
+
+  try {
+    const blob = new Blob([html], { type: 'text/html;charset=utf-8' });
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = 'relatorio-financeiro-' + d.condo.toLowerCase().replace(/\s+/g,'-') + '.html';
+    document.body.appendChild(a); a.click();
+    setTimeout(() => { URL.revokeObjectURL(url); document.body.removeChild(a); }, 400);
+  } catch(e) {
+    const w = window.open('','_blank');
+    if(w) { w.document.write(html); w.document.close(); }
+    else alert('Permita pop-ups e tente novamente.');
+  }
+}
+
+// ── UTILS ─────────────────────────────────────────────────
+function fmt(n) {
+  return Number(n).toLocaleString('pt-BR', {minimumFractionDigits:2, maximumFractionDigits:2});
+}
+function fmtK(n) {
+  if (n >= 1000) return (n/1000).toFixed(1).replace('.',',') + 'k';
+  return Number(n).toLocaleString('pt-BR', {maximumFractionDigits:0});
+}
+function getToday() {
+  const n = new Date();
+  const m = ['janeiro','fevereiro','março','abril','maio','junho','julho','agosto','setembro','outubro','novembro','dezembro'];
+  return `${n.getDate()} de ${m[n.getMonth()]} de ${n.getFullYear()}`;
+}
+
+// ── INIT ──────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', () => {
+  autoFill();
+  // Pre-fill example data so the user can explore right away
+  const examples = {
+    'fin-condo':    '',
+    'fin-sindico':  '',
+    'fin-unidades': '60',
+    'fin-cota':     '380',
+    'cat-limpeza':  '7200',
+    'cat-portaria': '8500',
+    'cat-energia':  '3100',
+    'cat-agua':     '2200',
+    'cat-manutencao':'2800',
+    'cat-admin':    '1400',
+    'cat-reserva':  '1500',
+    'cat-outras':   '1200'
+  };
+  Object.entries(examples).forEach(([id, val]) => {
+    const el = document.getElementById(id);
+    if (el && !el.value && val) el.value = val;
+  });
+});
+</script>
+</body>
+</html>
